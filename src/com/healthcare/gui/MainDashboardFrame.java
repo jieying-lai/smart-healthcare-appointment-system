@@ -132,7 +132,7 @@ public class MainDashboardFrame extends JFrame {
     private void showNotificationsDialog(JButton notifBtn) {
         List<Notification> notifs = notificationService.getNotificationsForUser(currentUser.getUserId());
         notificationService.markAllAsRead(currentUser.getUserId());
-        notifBtn.setText("🔔 Notifications (0)");
+        notifBtn.setText("Notifications (0)");
 
         JDialog dialog = new JDialog(this, "Notifications & System Alerts", true);
         dialog.setSize(480, 400);
