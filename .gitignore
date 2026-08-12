@@ -1,0 +1,19 @@
+# Eclipse & IDE metadata
+bin/
+.settings/
+.classpath
+.project
+*.class
+
+# VS Code & IntelliJ metadata
+.vscode/
+.idea/
+*.iml
+
+# Runtime generated data store
+data/system_store.dat
+
+# OS files
+Thumbs.db
+.DS_Store
+sources.txt
