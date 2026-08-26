@@ -40,7 +40,7 @@ public class ReportPanel extends JPanel {
 
         totalApptsValue = new JLabel("0", SwingConstants.CENTER);
         completedApptsValue = new JLabel("0", SwingConstants.CENTER);
-        totalRevenueValue = new JLabel("$0.00", SwingConstants.CENTER);
+        totalRevenueValue = new JLabel("RM 0.00", SwingConstants.CENTER);
         totalPatientsValue = new JLabel("0", SwingConstants.CENTER);
 
         cardsGrid.add(createMetricCard("Total Bookings", totalApptsValue, ModernTheme.PRIMARY));
@@ -82,7 +82,7 @@ public class ReportPanel extends JPanel {
         ReportData data = reportService.generateSystemReport();
         totalApptsValue.setText(String.valueOf(data.getTotalAppointments()));
         completedApptsValue.setText(String.valueOf(data.getCompletedAppointments()));
-        totalRevenueValue.setText("$" + String.format("%.2f", data.getTotalRevenue()));
+        totalRevenueValue.setText("RM " + String.format("%.2f", data.getTotalRevenue()));
         totalPatientsValue.setText(String.valueOf(data.getTotalPatients()));
 
         String summaryText = reportService.generateFormattedSummaryReport();

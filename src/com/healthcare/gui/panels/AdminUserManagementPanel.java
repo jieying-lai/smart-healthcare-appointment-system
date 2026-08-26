@@ -118,7 +118,7 @@ public class AdminUserManagementPanel extends JPanel {
         addFormRow(panel, gbc, "Specialization:", specField, y++);
         addFormRow(panel, gbc, "Department:", deptField, y++);
         addFormRow(panel, gbc, "Room Number:", roomField, y++);
-        addFormRow(panel, gbc, "Consultation Fee ($):", feeField, y++);
+        addFormRow(panel, gbc, "Consultation Fee (RM):", feeField, y++);
 
         JButton createBtn = ModernTheme.createPrimaryButton("Create Doctor Account");
         createBtn.addActionListener(e -> {

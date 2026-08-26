@@ -1,0 +1,4 @@
+# Appointment Data Storage: apptId|patientId|patientName|doctorId|doctorName|date|time|status|reason|notes|fee
+APT-1003|USR-007|Tan Ah Hock|USR-004|Dr. Kavitha a/p Subramaniam|2026-08-25|14:00|COMPLETED|Pemeriksaan Kesihatan Rutin|Pesakit dalam keadaan sihat. Dipreskripsi Ubat Vitamin D3.|110.0
+APT-1002|USR-008|Nur Aisyah binti Ismail|USR-003|Dr. Lee Mei Ling|2026-08-26|10:30|WAITING|Rawatan Masalah Kulit||120.0
+APT-1001|USR-007|Tan Ah Hock|USR-002|Dr. Ahmad Razali bin Hassan|2026-08-26|09:30|SCHEDULED|Pemeriksaan Kardiologi Tahunan||150.0

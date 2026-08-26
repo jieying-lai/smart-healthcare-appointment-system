@@ -1,0 +1,2 @@
+# Prescription Data Storage: rxId|apptId|patientId|patientName|doctorId|doctorName|medication|dosage|instructions|status
+RX-5001|APT-1003|USR-007|Tan Ah Hock|USR-004|Dr. Kavitha a/p Subramaniam|Vitamin D3 1000 IU|1 biji sehari|Makan selepas sarapan pagi|PENDING

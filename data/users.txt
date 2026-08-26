@@ -1,0 +1,9 @@
+# User Data Storage: TYPE|userId|username|password|fullName|email|phone|extraFields...|active
+NURSE|USR-005|nurse_siti|nurse123|Nurse Siti Nurhaliza binti Ali|snurhaliza@pantai.com.my|+60 13-556 7890|Jabatan Pesakit Luar|Syif Pagi (08:00 - 16:00)|true
+PHARMACIST|USR-006|pharm_wong|pharm123|Wong Wei Jun (Pharmacist)|weijun@pantai.com.my|+60 14-667 8901|MPS-994821|Farmasi Utama|true
+PATIENT|USR-007|tan_ah_hock|pass123|Tan Ah Hock|tahock@gmail.com|+60 12-778 9012|1988-05-14|O+|Darah Tinggi, Alahan Penicillin|+60 12-999 8877|true
+PATIENT|USR-008|nur_aisyah|pass123|Nur Aisyah binti Ismail|aisyah@yahoo.com.my|+60 18-889 0123|1995-11-20|A-|Tiada rekod penyakit kronik|+60 11-2233 4455|true
+ADMIN|USR-001|admin|admin123|Tan Jin Heng (Admin Alex)|alex.tan@pantai.com.my|+60 12-345 6789|Level 5 Super Admin|true
+DOCTOR|USR-002|dr_razali|doc123|Dr. Ahmad Razali bin Hassan|razali@pantai.com.my|+60 19-223 4567|Kardiologi (Cardiology)|Pusat Jantung Negara|Bilik 302|150.0|true
+DOCTOR|USR-003|dr_lee|doc123|Dr. Lee Mei Ling|meiling@pantai.com.my|+60 16-334 5678|Dermatologi (Skin Care)|Jabatan Kulit|Bilik 105|120.0|true
+DOCTOR|USR-004|dr_kavitha|doc123|Dr. Kavitha a/p Subramaniam|kavitha@pantai.com.my|+60 17-445 6789|Pediatrik (Child Health)|Jabatan Kanak-Kanak|Bilik 210|110.0|true

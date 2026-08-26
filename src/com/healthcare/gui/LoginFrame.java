@@ -116,11 +116,11 @@ public class LoginFrame extends JFrame {
         accountsList.setLayout(new BoxLayout(accountsList, BoxLayout.Y_AXIS));
         accountsList.setOpaque(false);
 
-        addQuickLoginButton(accountsList, "System Admin", "admin", "admin123", Role.ADMIN);
-        addQuickLoginButton(accountsList, "Dr. Alexander Smith (Doctor)", "dr_smith", "doc123", Role.DOCTOR);
-        addQuickLoginButton(accountsList, "Nurse Joy Miller (Nurse)", "nurse_joy", "nurse123", Role.NURSE);
-        addQuickLoginButton(accountsList, "Claire Redfield (Pharmacist)", "pharm_claire", "pharm123", Role.PHARMACIST);
-        addQuickLoginButton(accountsList, "John Doe (Patient)", "john_doe", "pass123", Role.PATIENT);
+        addQuickLoginButton(accountsList, "Tan Jin Heng (Admin Alex)", "admin", "admin123", Role.ADMIN);
+        addQuickLoginButton(accountsList, "Dr. Ahmad Razali (Doctor)", "dr_razali", "doc123", Role.DOCTOR);
+        addQuickLoginButton(accountsList, "Nurse Siti Nurhaliza (Nurse)", "nurse_siti", "nurse123", Role.NURSE);
+        addQuickLoginButton(accountsList, "Wong Wei Jun (Pharmacist)", "pharm_wong", "pharm123", Role.PHARMACIST);
+        addQuickLoginButton(accountsList, "Tan Ah Hock (Patient)", "tan_ah_hock", "pass123", Role.PATIENT);
 
         JScrollPane scroll = new JScrollPane(accountsList);
         scroll.setBorder(null);

@@ -1,0 +1,3 @@
+# Notification Data Storage: notifId|recipientId|title|message|type|isRead
+NOTIF-101|USR-007|Temujanji Disahkan|Temujanji anda dengan Dr. Ahmad Razali telah disahkan untuk hari ini pukul 09:30 AM.|APPOINTMENT|false
+NOTIF-102|USR-008|Kemaskini Giliran|Jururawat Siti Nurhaliza telah mendaftar masuk anda. Sila tunggu di Bilik Menunggu B.|STATUS_CHANGE|false

@@ -70,7 +70,7 @@ public class ReportService {
         sb.append("   - Total Registered Patients : ").append(data.getTotalPatients()).append("\n");
         sb.append("   - Total Active Doctors     : ").append(data.getTotalDoctors()).append("\n");
         sb.append("   - Total Appointments       : ").append(data.getTotalAppointments()).append("\n");
-        sb.append("   - Total Revenue Generated  : $").append(String.format("%.2f", data.getTotalRevenue())).append("\n\n");
+        sb.append("   - Total Revenue Generated  : RM ").append(String.format("%.2f", data.getTotalRevenue())).append("\n\n");
 
         sb.append("2. APPOINTMENT STATUS BREAKDOWN\n");
         for (Map.Entry<String, Integer> entry : data.getStatusBreakdown().entrySet()) {
