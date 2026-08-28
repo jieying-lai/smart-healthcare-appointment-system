@@ -4,3 +4,10 @@ APT-1002|USR-008|Nur Aisyah binti Ismail|USR-003|Dr. Lee Mei Ling|2026-08-28|10:
 APT-1003|USR-020|Chong Wei Ming|USR-004|Dr. Kavitha a/p Subramaniam|2026-08-27|14:00|COMPLETED|Routine Pediatric Checkup|Patient in healthy condition. Prescribed Vitamin D3 1000 IU.|110.0
 APT-1004|USR-021|Kamala a/p Krishnan|USR-009|Dr. Suresh Kumar a/l Raman|2026-08-28|11:00|WAITING|Knee Joint Pain Consultation||160.0
 APT-1005|USR-022|Ahmad Faiz bin Zulkifli|USR-010|Dr. Nurul Huda binti Azman|2026-08-29|15:00|SCHEDULED|Neurology Headache Evaluation||180.0
+APT-1006|USR-023|Lim Bee Hoon|USR-002|Dr. Ahmad Razali bin Hassan|2026-08-26|09:00|COMPLETED|Cardiovascular Hypertension Check|ECG normal. Continue Low-Sodium diet and Amlodipine 5mg.|150.0
+APT-1007|USR-024|Suresh a/l Devan|USR-003|Dr. Lee Mei Ling|2026-08-25|11:30|COMPLETED|Allergies & Eczema Consultation|Eczema flare-up on forearm. Prescribed Hydrocortisone cream 1%.|120.0
+APT-1008|USR-025|Noraini binti Mohd Salleh|USR-004|Dr. Kavitha a/p Subramaniam|2026-08-24|10:00|COMPLETED|Flu & Fever Examination|Mild viral infection. Rest well and take Paracetamol 500mg after meals.|110.0
+APT-1009|USR-026|Kevin Ng Chee Keong|USR-009|Dr. Suresh Kumar a/l Raman|2026-08-23|16:00|COMPLETED|Sports Wrist Strain Consultation|Sprained right wrist during basketball. Wrist brace applied.|160.0
+APT-1010|USR-027|Siti Fatimah binti Hamzah|USR-010|Dr. Nurul Huda binti Azman|2026-08-22|15:30|COMPLETED|Migraine & Tension Headache Review|Tension headache caused by prolonged screen time. Sleep hygiene advice provided.|180.0
+APT-1011|USR-007|Tan Ah Hock|USR-003|Dr. Lee Mei Ling|2026-08-21|14:30|COMPLETED|Dry Skin & Itching Follow-up|Dry skin condition improving. Prescribed Cetirizine 10mg for nighttime allergy.|120.0
+APT-1012|USR-008|Nur Aisyah binti Ismail|USR-002|Dr. Ahmad Razali bin Hassan|2026-08-20|10:30|COMPLETED|Blood Pressure Screening|Blood pressure normal at 118/76 mmHg. Maintain regular exercise.|150.0

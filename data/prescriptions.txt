@@ -1,3 +1,7 @@
 # Prescription Data Storage: rxId|apptId|patientId|patientName|doctorId|doctorName|medication|dosage|instructions|status|dispensedByPharmacistName|pharmacySection
 RX-5001|APT-1003|USR-020|Chong Wei Ming|USR-004|Dr. Kavitha a/p Subramaniam|Vitamin D3 1000 IU|1 tablet daily|Take 1 tablet daily after breakfast with water.|DISPENSED|Wong Wei Jun (Pharmacist)|Main Pharmacy Store
 RX-5002|APT-1004|USR-021|Kamala a/p Krishnan|USR-009|Dr. Suresh Kumar a/l Raman|Glucosamine Sulfate 500mg|2 capsules daily|Take after lunch for joint lubrication.|PREPARING|Priya a/p Ramesh (Pharmacist)|Outpatient Pharmacy Counter 2
+RX-5003|APT-1006|USR-023|Lim Bee Hoon|USR-002|Dr. Ahmad Razali bin Hassan|Amlodipine 5mg|1 tablet daily|Take 1 tablet in the morning for blood pressure control.|DISPENSED|Wong Wei Jun (Pharmacist)|Main Pharmacy Store
+RX-5004|APT-1007|USR-024|Suresh a/l Devan|USR-003|Dr. Lee Mei Ling|Hydrocortisone Cream 1%|Apply twice daily|Apply thin layer to affected skin area.|DISPENSED|Priya a/p Ramesh (Pharmacist)|Outpatient Pharmacy Counter 2
+RX-5005|APT-1008|USR-025|Noraini binti Mohd Salleh|USR-004|Dr. Kavitha a/p Subramaniam|Paracetamol 500mg|1-2 tablets every 6 hours|Take after meals for fever relief.|DISPENSED|Muhammad Hafiz bin Rosli (Pharmacist)|Emergency Pharmacy Store
+RX-5006|APT-1011|USR-007|Tan Ah Hock|USR-003|Dr. Lee Mei Ling|Cetirizine 10mg|1 tablet at bedtime|Take 1 tablet at night for itching relief.|DISPENSED|Wong Wei Jun (Pharmacist)|Main Pharmacy Store

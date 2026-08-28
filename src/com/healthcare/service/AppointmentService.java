@@ -148,11 +148,8 @@ public class AppointmentService {
         if (appt == null) {
             throw new InvalidRecordException("Appointment record not found.");
         }
-        if (appt.getStatus() == AppointmentStatus.COMPLETED) {
-            throw new InvalidRecordException("This consultation has already been completed.");
-        }
-        if (appt.getStatus() == AppointmentStatus.CANCELLED) {
-            throw new InvalidRecordException("Cannot record consultation notes for a cancelled appointment.");
+        if (appt.getStatus() != AppointmentStatus.IN_CONSULTATION) {
+            throw new InvalidRecordException("Cannot complete consultation before it has been started. The consultation status must be IN_CONSULTATION.");
         }
 
         appt.setConsultationNotes(notes);

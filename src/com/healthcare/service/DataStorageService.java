@@ -363,7 +363,7 @@ public class DataStorageService {
         users.put(pat9.getUserId(), pat9);
         users.put(pat10.getUserId(), pat10);
 
-        // Sample Appointments
+        // Sample Appointments (15 realistic records across all 10 patients and 5 doctors)
         LocalDate today = LocalDate.now();
         Appointment app1 = new Appointment("APT-1001", pat1.getUserId(), pat1.getFullName(), 
                                             doc1.getUserId(), doc1.getFullName(), today, 
@@ -391,11 +391,60 @@ public class DataStorageService {
                                             LocalTime.of(15, 0), "Neurology Headache Evaluation", doc5.getConsultationFee());
         app5.setStatus(AppointmentStatus.SCHEDULED);
 
+        Appointment app6 = new Appointment("APT-1006", pat6.getUserId(), pat6.getFullName(), 
+                                            doc1.getUserId(), doc1.getFullName(), today.minusDays(2), 
+                                            LocalTime.of(9, 0), "Cardiovascular Hypertension Check", doc1.getConsultationFee());
+        app6.setStatus(AppointmentStatus.COMPLETED);
+        app6.setConsultationNotes("ECG normal. Continue Low-Sodium diet and Amlodipine 5mg.");
+
+        Appointment app7 = new Appointment("APT-1007", pat7.getUserId(), pat7.getFullName(), 
+                                            doc2.getUserId(), doc2.getFullName(), today.minusDays(3), 
+                                            LocalTime.of(11, 30), "Allergies & Eczema Consultation", doc2.getConsultationFee());
+        app7.setStatus(AppointmentStatus.COMPLETED);
+        app7.setConsultationNotes("Eczema flare-up on forearm. Prescribed Hydrocortisone cream 1%.");
+
+        Appointment app8 = new Appointment("APT-1008", pat8.getUserId(), pat8.getFullName(), 
+                                            doc3.getUserId(), doc3.getFullName(), today.minusDays(4), 
+                                            LocalTime.of(10, 0), "Flu & Fever Examination", doc3.getConsultationFee());
+        app8.setStatus(AppointmentStatus.COMPLETED);
+        app8.setConsultationNotes("Mild viral infection. Rest well and take Paracetamol 500mg after meals.");
+
+        Appointment app9 = new Appointment("APT-1009", pat9.getUserId(), pat9.getFullName(), 
+                                            doc4.getUserId(), doc4.getFullName(), today.minusDays(5), 
+                                            LocalTime.of(16, 0), "Sports Wrist Strain Consultation", doc4.getConsultationFee());
+        app9.setStatus(AppointmentStatus.COMPLETED);
+        app9.setConsultationNotes("Sprained right wrist during basketball. Wrist brace applied.");
+
+        Appointment app10 = new Appointment("APT-1010", pat10.getUserId(), pat10.getFullName(), 
+                                             doc5.getUserId(), doc5.getFullName(), today.minusDays(6), 
+                                             LocalTime.of(15, 30), "Migraine & Tension Headache Review", doc5.getConsultationFee());
+        app10.setStatus(AppointmentStatus.COMPLETED);
+        app10.setConsultationNotes("Tension headache caused by prolonged screen time. Sleep hygiene advice provided.");
+
+        Appointment app11 = new Appointment("APT-1011", pat1.getUserId(), pat1.getFullName(), 
+                                             doc2.getUserId(), doc2.getFullName(), today.minusDays(7), 
+                                             LocalTime.of(14, 30), "Dry Skin & Itching Follow-up", doc2.getConsultationFee());
+        app11.setStatus(AppointmentStatus.COMPLETED);
+        app11.setConsultationNotes("Dry skin condition improving. Prescribed Cetirizine 10mg for nighttime allergy.");
+
+        Appointment app12 = new Appointment("APT-1012", pat2.getUserId(), pat2.getFullName(), 
+                                             doc1.getUserId(), doc1.getFullName(), today.minusDays(8), 
+                                             LocalTime.of(10, 30), "Blood Pressure Screening", doc1.getConsultationFee());
+        app12.setStatus(AppointmentStatus.COMPLETED);
+        app12.setConsultationNotes("Blood pressure normal at 118/76 mmHg. Maintain regular exercise.");
+
         appointments.put(app1.getAppointmentId(), app1);
         appointments.put(app2.getAppointmentId(), app2);
         appointments.put(app3.getAppointmentId(), app3);
         appointments.put(app4.getAppointmentId(), app4);
         appointments.put(app5.getAppointmentId(), app5);
+        appointments.put(app6.getAppointmentId(), app6);
+        appointments.put(app7.getAppointmentId(), app7);
+        appointments.put(app8.getAppointmentId(), app8);
+        appointments.put(app9.getAppointmentId(), app9);
+        appointments.put(app10.getAppointmentId(), app10);
+        appointments.put(app11.getAppointmentId(), app11);
+        appointments.put(app12.getAppointmentId(), app12);
 
         // Sample Prescriptions (with dispensing Pharmacist & Pharmacy Section tracking)
         Prescription rx1 = new Prescription("RX-5001", app3.getAppointmentId(), pat3.getUserId(), 
@@ -414,8 +463,44 @@ public class DataStorageService {
         rx2.setDispensedByPharmacistName(pharm2.getFullName());
         rx2.setPharmacySection(pharm2.getPharmacySection());
 
+        Prescription rx3 = new Prescription("RX-5003", app6.getAppointmentId(), pat6.getUserId(), 
+                                            pat6.getFullName(), doc1.getUserId(), doc1.getFullName(), 
+                                            "Amlodipine 5mg", "1 tablet daily", "Take 1 tablet in the morning for blood pressure control.");
+        rx3.setStatus(PrescriptionStatus.DISPENSED);
+        rx3.setDispensedByPharmacistId(pharm1.getUserId());
+        rx3.setDispensedByPharmacistName(pharm1.getFullName());
+        rx3.setPharmacySection(pharm1.getPharmacySection());
+
+        Prescription rx4 = new Prescription("RX-5004", app7.getAppointmentId(), pat7.getUserId(), 
+                                            pat7.getFullName(), doc2.getUserId(), doc2.getFullName(), 
+                                            "Hydrocortisone Cream 1%", "Apply twice daily", "Apply thin layer to affected skin area.");
+        rx4.setStatus(PrescriptionStatus.DISPENSED);
+        rx4.setDispensedByPharmacistId(pharm2.getUserId());
+        rx4.setDispensedByPharmacistName(pharm2.getFullName());
+        rx4.setPharmacySection(pharm2.getPharmacySection());
+
+        Prescription rx5 = new Prescription("RX-5005", app8.getAppointmentId(), pat8.getUserId(), 
+                                            pat8.getFullName(), doc3.getUserId(), doc3.getFullName(), 
+                                            "Paracetamol 500mg", "1-2 tablets every 6 hours", "Take after meals for fever relief.");
+        rx5.setStatus(PrescriptionStatus.DISPENSED);
+        rx5.setDispensedByPharmacistId(pharm3.getUserId());
+        rx5.setDispensedByPharmacistName(pharm3.getFullName());
+        rx5.setPharmacySection(pharm3.getPharmacySection());
+
+        Prescription rx6 = new Prescription("RX-5006", app11.getAppointmentId(), pat1.getUserId(), 
+                                             pat1.getFullName(), doc2.getUserId(), doc2.getFullName(), 
+                                             "Cetirizine 10mg", "1 tablet at bedtime", "Take 1 tablet at night for itching relief.");
+        rx6.setStatus(PrescriptionStatus.DISPENSED);
+        rx6.setDispensedByPharmacistId(pharm1.getUserId());
+        rx6.setDispensedByPharmacistName(pharm1.getFullName());
+        rx6.setPharmacySection(pharm1.getPharmacySection());
+
         prescriptions.put(rx1.getPrescriptionId(), rx1);
         prescriptions.put(rx2.getPrescriptionId(), rx2);
+        prescriptions.put(rx3.getPrescriptionId(), rx3);
+        prescriptions.put(rx4.getPrescriptionId(), rx4);
+        prescriptions.put(rx5.getPrescriptionId(), rx5);
+        prescriptions.put(rx6.getPrescriptionId(), rx6);
 
         // Sample Notifications
         notifications.add(new Notification("NOTIF-101", pat1.getUserId(), "Appointment Confirmed", 

@@ -93,6 +93,9 @@ public class DoctorPanel extends JPanel {
         JButton viewDetailsBtn = ModernTheme.createSecondaryButton("View Full Details");
         viewDetailsBtn.addActionListener(e -> handleViewFullDetails());
 
+        JButton rescheduleBtn = ModernTheme.createSecondaryButton("Reschedule Slot");
+        rescheduleBtn.addActionListener(e -> showDoctorRescheduleDialog());
+
         JButton startConsultationBtn = ModernTheme.createPrimaryButton("Start Consultation");
         startConsultationBtn.addActionListener(e -> setStatus(AppointmentStatus.IN_CONSULTATION));
 
@@ -105,6 +108,7 @@ public class DoctorPanel extends JPanel {
         issuePrescriptionBtn.addActionListener(e -> showPrescriptionDialog());
 
         toolbar.add(viewDetailsBtn);
+        toolbar.add(rescheduleBtn);
         toolbar.add(startConsultationBtn);
         toolbar.add(completeConsultationBtn);
         toolbar.add(issuePrescriptionBtn);
@@ -348,5 +352,61 @@ public class DoctorPanel extends JPanel {
                 a.getConsultationNotes() != null ? a.getConsultationNotes() : "-"
             });
         }
+    }
+
+    private void showDoctorRescheduleDialog() {
+        int row = queueTable.getSelectedRow();
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this, "Please select an appointment from the queue table first.", "Selection Required", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        String apptId = (String) queueTableModel.getValueAt(row, 0);
+
+        JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Reschedule Appointment - " + apptId, true);
+        dialog.setSize(400, 240);
+        dialog.setLocationRelativeTo(this);
+
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBorder(new EmptyBorder(16, 16, 16, 16));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(6, 6, 6, 6);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        String[] timeSlots = {"09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "14:00", "14:30", "15:00", "15:30", "16:00"};
+        JComboBox<String> timeCombo = new JComboBox<>(timeSlots);
+        timeCombo.setSelectedItem("11:00");
+        JTextField dateField = ModernTheme.createTextField();
+        dateField.setText(java.time.LocalDate.now().plusDays(1).toString());
+
+        gbc.gridx = 0; gbc.gridy = 0; gbc.weightx = 0.3;
+        panel.add(new JLabel("New Date (YYYY-MM-DD):"), gbc);
+        gbc.gridx = 1; gbc.gridy = 0; gbc.weightx = 0.7;
+        panel.add(dateField, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 1; gbc.weightx = 0.3;
+        panel.add(new JLabel("New Time Slot:"), gbc);
+        gbc.gridx = 1; gbc.gridy = 1; gbc.weightx = 0.7;
+        panel.add(timeCombo, gbc);
+
+        JButton saveBtn = ModernTheme.createPrimaryButton("Confirm Reschedule");
+        saveBtn.addActionListener(e -> {
+            try {
+                java.time.LocalDate d = java.time.LocalDate.parse(dateField.getText().trim());
+                java.time.LocalTime t = java.time.LocalTime.parse((String) timeCombo.getSelectedItem());
+                appointmentService.rescheduleAppointment(apptId, d, t);
+                JOptionPane.showMessageDialog(dialog, "Appointment rescheduled successfully by Dr. " + doctor.getFullName() + "!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                dialog.dispose();
+                refreshTable();
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(dialog, ex.getMessage(), "Reschedule Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        gbc.gridx = 0; gbc.gridy = 2; gbc.gridwidth = 2; gbc.weightx = 1.0;
+        panel.add(saveBtn, gbc);
+
+        dialog.add(panel);
+        dialog.setVisible(true);
     }
 }
