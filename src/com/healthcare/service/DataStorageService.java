@@ -104,37 +104,42 @@ public class DataStorageService {
         }
     }
 
+    private String cleanStr(String s) {
+        if (s == null) return "";
+        return s.replace("|", " ").replace("\n", " ").replace("\r", " ").trim();
+    }
+
     private void saveUsersText() {
         try (PrintWriter writer = new PrintWriter(new FileWriter(USERS_FILE))) {
             writer.println("# User Data Storage: TYPE|userId|username|password|fullName|email|phone|extraFields...|active");
             for (User u : users.values()) {
                 if (u instanceof Admin) {
                     Admin a = (Admin) u;
-                    writer.println("ADMIN|" + a.getUserId() + "|" + a.getUsername() + "|" + a.getPassword() + "|" + 
-                                   a.getFullName() + "|" + a.getEmail() + "|" + a.getPhone() + "|" + 
-                                   a.getAccessLevel() + "|" + a.isActive());
+                    writer.println("ADMIN|" + cleanStr(a.getUserId()) + "|" + cleanStr(a.getUsername()) + "|" + cleanStr(a.getPassword()) + "|" + 
+                                   cleanStr(a.getFullName()) + "|" + cleanStr(a.getEmail()) + "|" + cleanStr(a.getPhone()) + "|" + 
+                                   cleanStr(a.getAccessLevel()) + "|" + a.isActive());
                 } else if (u instanceof Doctor) {
                     Doctor d = (Doctor) u;
-                    writer.println("DOCTOR|" + d.getUserId() + "|" + d.getUsername() + "|" + d.getPassword() + "|" + 
-                                   d.getFullName() + "|" + d.getEmail() + "|" + d.getPhone() + "|" + 
-                                   d.getSpecialization() + "|" + d.getDepartment() + "|" + d.getRoomNumber() + "|" + 
+                    writer.println("DOCTOR|" + cleanStr(d.getUserId()) + "|" + cleanStr(d.getUsername()) + "|" + cleanStr(d.getPassword()) + "|" + 
+                                   cleanStr(d.getFullName()) + "|" + cleanStr(d.getEmail()) + "|" + cleanStr(d.getPhone()) + "|" + 
+                                   cleanStr(d.getSpecialization()) + "|" + cleanStr(d.getDepartment()) + "|" + cleanStr(d.getRoomNumber()) + "|" + 
                                    d.getConsultationFee() + "|" + d.isActive());
                 } else if (u instanceof Nurse) {
                     Nurse n = (Nurse) u;
-                    writer.println("NURSE|" + n.getUserId() + "|" + n.getUsername() + "|" + n.getPassword() + "|" + 
-                                   n.getFullName() + "|" + n.getEmail() + "|" + n.getPhone() + "|" + 
-                                   n.getDepartment() + "|" + n.getShiftInfo() + "|" + n.isActive());
+                    writer.println("NURSE|" + cleanStr(n.getUserId()) + "|" + cleanStr(n.getUsername()) + "|" + cleanStr(n.getPassword()) + "|" + 
+                                   cleanStr(n.getFullName()) + "|" + cleanStr(n.getEmail()) + "|" + cleanStr(n.getPhone()) + "|" + 
+                                   cleanStr(n.getDepartment()) + "|" + cleanStr(n.getShiftInfo()) + "|" + n.isActive());
                 } else if (u instanceof Pharmacist) {
                     Pharmacist p = (Pharmacist) u;
-                    writer.println("PHARMACIST|" + p.getUserId() + "|" + p.getUsername() + "|" + p.getPassword() + "|" + 
-                                   p.getFullName() + "|" + p.getEmail() + "|" + p.getPhone() + "|" + 
-                                   p.getLicenseNumber() + "|" + p.getPharmacySection() + "|" + p.isActive());
+                    writer.println("PHARMACIST|" + cleanStr(p.getUserId()) + "|" + cleanStr(p.getUsername()) + "|" + cleanStr(p.getPassword()) + "|" + 
+                                   cleanStr(p.getFullName()) + "|" + cleanStr(p.getEmail()) + "|" + cleanStr(p.getPhone()) + "|" + 
+                                   cleanStr(p.getLicenseNumber()) + "|" + cleanStr(p.getPharmacySection()) + "|" + p.isActive());
                 } else if (u instanceof Patient) {
                     Patient pat = (Patient) u;
-                    writer.println("PATIENT|" + pat.getUserId() + "|" + pat.getUsername() + "|" + pat.getPassword() + "|" + 
-                                   pat.getFullName() + "|" + pat.getEmail() + "|" + pat.getPhone() + "|" + 
-                                   pat.getDateOfBirth() + "|" + pat.getBloodGroup() + "|" + pat.getMedicalHistory() + "|" + 
-                                   pat.getEmergencyContact() + "|" + pat.isActive());
+                    writer.println("PATIENT|" + cleanStr(pat.getUserId()) + "|" + cleanStr(pat.getUsername()) + "|" + cleanStr(pat.getPassword()) + "|" + 
+                                   cleanStr(pat.getFullName()) + "|" + cleanStr(pat.getEmail()) + "|" + cleanStr(pat.getPhone()) + "|" + 
+                                   cleanStr(pat.getDateOfBirth()) + "|" + cleanStr(pat.getBloodGroup()) + "|" + cleanStr(pat.getMedicalHistory()) + "|" + 
+                                   cleanStr(pat.getEmergencyContact()) + "|" + pat.isActive());
                 }
             }
         } catch (IOException e) {
@@ -171,10 +176,10 @@ public class DataStorageService {
         try (PrintWriter writer = new PrintWriter(new FileWriter(APPOINTMENTS_FILE))) {
             writer.println("# Appointment Data Storage: apptId|patientId|patientName|doctorId|doctorName|date|time|status|reason|notes|fee");
             for (Appointment a : appointments.values()) {
-                writer.println(a.getAppointmentId() + "|" + a.getPatientId() + "|" + a.getPatientName() + "|" + 
-                               a.getDoctorId() + "|" + a.getDoctorName() + "|" + a.getAppointmentDate() + "|" + 
-                               a.getAppointmentTime() + "|" + a.getStatus().name() + "|" + a.getReasonForVisit() + "|" + 
-                               a.getConsultationNotes() + "|" + a.getFee());
+                writer.println(cleanStr(a.getAppointmentId()) + "|" + cleanStr(a.getPatientId()) + "|" + cleanStr(a.getPatientName()) + "|" + 
+                               cleanStr(a.getDoctorId()) + "|" + cleanStr(a.getDoctorName()) + "|" + a.getAppointmentDate() + "|" + 
+                               a.getAppointmentTime() + "|" + a.getStatus().name() + "|" + cleanStr(a.getReasonForVisit()) + "|" + 
+                               cleanStr(a.getConsultationNotes()) + "|" + a.getFee());
             }
         } catch (IOException e) {
             System.err.println("Error saving appointments text file: " + e.getMessage());
@@ -208,9 +213,9 @@ public class DataStorageService {
         try (PrintWriter writer = new PrintWriter(new FileWriter(PRESCRIPTIONS_FILE))) {
             writer.println("# Prescription Data Storage: rxId|apptId|patientId|patientName|doctorId|doctorName|medication|dosage|instructions|status");
             for (Prescription rx : prescriptions.values()) {
-                writer.println(rx.getPrescriptionId() + "|" + rx.getAppointmentId() + "|" + rx.getPatientId() + "|" + 
-                               rx.getPatientName() + "|" + rx.getDoctorId() + "|" + rx.getDoctorName() + "|" + 
-                               rx.getMedicationName() + "|" + rx.getDosage() + "|" + rx.getInstructions() + "|" + 
+                writer.println(cleanStr(rx.getPrescriptionId()) + "|" + cleanStr(rx.getAppointmentId()) + "|" + cleanStr(rx.getPatientId()) + "|" + 
+                               cleanStr(rx.getPatientName()) + "|" + cleanStr(rx.getDoctorId()) + "|" + cleanStr(rx.getDoctorName()) + "|" + 
+                               cleanStr(rx.getMedicationName()) + "|" + cleanStr(rx.getDosage()) + "|" + cleanStr(rx.getInstructions()) + "|" + 
                                rx.getStatus().name());
             }
         } catch (IOException e) {

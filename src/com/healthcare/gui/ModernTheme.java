@@ -206,43 +206,39 @@ public class ModernTheme {
                 JLabel c = (JLabel) super.getTableCellRendererComponent(tbl, val, isSelected, hasFocus, row, col);
                 c.setOpaque(true);
 
-                if (val instanceof AppointmentStatus) {
-                    AppointmentStatus status = (AppointmentStatus) val;
-                    c.setText("  " + status.getLabel() + "  ");
+                String strVal = val != null ? val.toString() : "";
+                c.setOpaque(true);
+
+                if (strVal.equals("Scheduled") || strVal.equals("SCHEDULED")) {
+                    c.setForeground(STATUS_SCHEDULED);
                     c.setFont(FONT_BOLD);
-                    
-                    switch (status) {
-                        case SCHEDULED:
-                            c.setForeground(STATUS_SCHEDULED);
-                            break;
-                        case WAITING:
-                            c.setForeground(STATUS_WAITING);
-                            break;
-                        case IN_CONSULTATION:
-                            c.setForeground(STATUS_IN_CONSULTATION);
-                            break;
-                        case COMPLETED:
-                            c.setForeground(STATUS_COMPLETED);
-                            break;
-                        case CANCELLED:
-                            c.setForeground(STATUS_CANCELLED);
-                            break;
-                    }
-                    if (isSelected) {
-                        c.setBackground(PRIMARY_LIGHT);
-                    } else {
-                        c.setBackground(Color.WHITE);
-                    }
+                } else if (strVal.equals("Waiting in Queue") || strVal.equals("WAITING")) {
+                    c.setForeground(STATUS_WAITING);
+                    c.setFont(FONT_BOLD);
+                } else if (strVal.equals("In Consultation") || strVal.equals("IN_CONSULTATION")) {
+                    c.setForeground(STATUS_IN_CONSULTATION);
+                    c.setFont(FONT_BOLD);
+                } else if (strVal.equals("Completed") || strVal.equals("COMPLETED") || strVal.equals("Dispensed") || strVal.equals("DISPENSED")) {
+                    c.setForeground(STATUS_COMPLETED);
+                    c.setFont(FONT_BOLD);
+                } else if (strVal.equals("Cancelled") || strVal.equals("CANCELLED")) {
+                    c.setForeground(STATUS_CANCELLED);
+                    c.setFont(FONT_BOLD);
+                } else if (strVal.equals("Pending (Pharmacy)") || strVal.equals("PENDING")) {
+                    c.setForeground(STATUS_WAITING);
+                    c.setFont(FONT_BOLD);
+                } else if (strVal.equals("Preparing") || strVal.equals("PREPARING")) {
+                    c.setForeground(STATUS_IN_CONSULTATION);
+                    c.setFont(FONT_BOLD);
                 } else {
-                    if (isSelected) {
-                        c.setForeground(PRIMARY_DARK);
-                        c.setFont(FONT_BOLD);
-                        c.setBackground(PRIMARY_LIGHT);
-                    } else {
-                        c.setForeground(TEXT_DARK);
-                        c.setFont(FONT_REGULAR);
-                        c.setBackground(row % 2 == 0 ? Color.WHITE : new Color(248, 250, 252));
-                    }
+                    c.setFont(FONT_REGULAR);
+                    c.setForeground(isSelected ? PRIMARY_DARK : TEXT_DARK);
+                }
+
+                if (isSelected) {
+                    c.setBackground(PRIMARY_LIGHT);
+                } else {
+                    c.setBackground(row % 2 == 0 ? Color.WHITE : new Color(248, 250, 252));
                 }
                 return c;
             }

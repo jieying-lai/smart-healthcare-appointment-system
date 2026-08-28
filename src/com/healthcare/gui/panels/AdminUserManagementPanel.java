@@ -123,18 +123,25 @@ public class AdminUserManagementPanel extends JPanel {
         JButton createBtn = ModernTheme.createPrimaryButton("Create Doctor Account");
         createBtn.addActionListener(e -> {
             try {
+                double fee = 0.0;
+                try {
+                    fee = Double.parseDouble(feeField.getText().trim());
+                } catch (NumberFormatException nfe) {
+                    throw new InvalidRecordException("Consultation fee must be a valid numeric amount (e.g. 150.00).");
+                }
+
                 String uId = "USR-" + UUID.randomUUID().toString().substring(0, 6).toUpperCase();
                 Doctor doc = new Doctor(uId, userField.getText().trim(), new String(passField.getPassword()),
                                         nameField.getText().trim(), emailField.getText().trim(), 
                                         phoneField.getText().trim(), specField.getText().trim(), 
                                         deptField.getText().trim(), roomField.getText().trim(), 
-                                        Double.parseDouble(feeField.getText().trim()));
+                                        fee);
                 authService.createUser(doc);
-                JOptionPane.showMessageDialog(dialog, "Doctor account created!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(dialog, "Doctor account created successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
                 dialog.dispose();
                 refreshTable();
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(dialog, "Error: " + ex.getMessage(), "Create Failed", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(dialog, ex.getMessage(), "Create Failed", JOptionPane.ERROR_MESSAGE);
             }
         });
 

@@ -313,10 +313,11 @@ public class PatientPanel extends JPanel {
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         JComboBox<Doctor> docCombo = new JComboBox<>(doctors.toArray(new Doctor[0]));
+        String[] timeSlots = {"09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "14:00", "14:30", "15:00", "15:30", "16:00"};
+        JComboBox<String> timeCombo = new JComboBox<>(timeSlots);
+        timeCombo.setSelectedItem("10:00");
         JTextField dateField = ModernTheme.createTextField();
         dateField.setText(LocalDate.now().plusDays(1).toString());
-        JTextField timeField = ModernTheme.createTextField();
-        timeField.setText("10:00");
         JTextField reasonField = ModernTheme.createTextField();
 
         gbc.gridx = 0; gbc.gridy = 0; gbc.weightx = 0.3;
@@ -330,9 +331,9 @@ public class PatientPanel extends JPanel {
         panel.add(dateField, gbc);
 
         gbc.gridx = 0; gbc.gridy = 2; gbc.weightx = 0.3;
-        panel.add(new JLabel("Time (HH:MM):"), gbc);
+        panel.add(new JLabel("Time Slot:"), gbc);
         gbc.gridx = 1; gbc.gridy = 2; gbc.weightx = 0.7;
-        panel.add(timeField, gbc);
+        panel.add(timeCombo, gbc);
 
         gbc.gridx = 0; gbc.gridy = 3; gbc.weightx = 0.3;
         panel.add(new JLabel("Reason for Visit:"), gbc);
@@ -344,7 +345,7 @@ public class PatientPanel extends JPanel {
             try {
                 Doctor selectedDoc = (Doctor) docCombo.getSelectedItem();
                 LocalDate d = LocalDate.parse(dateField.getText().trim());
-                LocalTime t = LocalTime.parse(timeField.getText().trim());
+                LocalTime t = LocalTime.parse((String) timeCombo.getSelectedItem());
                 String reason = reasonField.getText().trim();
 
                 if (reason.isEmpty()) {
@@ -387,10 +388,11 @@ public class PatientPanel extends JPanel {
         gbc.insets = new Insets(6, 6, 6, 6);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
+        String[] timeSlots = {"09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "14:00", "14:30", "15:00", "15:30", "16:00"};
+        JComboBox<String> timeCombo = new JComboBox<>(timeSlots);
+        timeCombo.setSelectedItem("11:00");
         JTextField dateField = ModernTheme.createTextField();
         dateField.setText(LocalDate.now().plusDays(2).toString());
-        JTextField timeField = ModernTheme.createTextField();
-        timeField.setText("11:00");
 
         gbc.gridx = 0; gbc.gridy = 0; gbc.weightx = 0.3;
         panel.add(new JLabel("New Date (YYYY-MM-DD):"), gbc);
@@ -398,15 +400,15 @@ public class PatientPanel extends JPanel {
         panel.add(dateField, gbc);
 
         gbc.gridx = 0; gbc.gridy = 1; gbc.weightx = 0.3;
-        panel.add(new JLabel("New Time (HH:MM):"), gbc);
+        panel.add(new JLabel("New Time Slot:"), gbc);
         gbc.gridx = 1; gbc.gridy = 1; gbc.weightx = 0.7;
-        panel.add(timeField, gbc);
+        panel.add(timeCombo, gbc);
 
         JButton saveBtn = ModernTheme.createPrimaryButton("Confirm Reschedule");
         saveBtn.addActionListener(e -> {
             try {
                 LocalDate d = LocalDate.parse(dateField.getText().trim());
-                LocalTime t = LocalTime.parse(timeField.getText().trim());
+                LocalTime t = LocalTime.parse((String) timeCombo.getSelectedItem());
                 appointmentService.rescheduleAppointment(apptId, d, t);
                 JOptionPane.showMessageDialog(dialog, "Appointment rescheduled successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
                 dialog.dispose();
