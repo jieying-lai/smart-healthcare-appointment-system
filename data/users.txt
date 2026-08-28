@@ -26,3 +26,4 @@ PATIENT|USR-024|suresh_devan|pass123|Suresh a/l Devan|suresh.dev@gmail.com|+60 1
 PATIENT|USR-025|noraini_salleh|pass123|Noraini binti Mohd Salleh|noraini@yahoo.com.my|+60 13-666 7788|1992-09-09|O+|Migraine History|+60 13-888 9900|true
 PATIENT|USR-026|kevin_ng|pass123|Kevin Ng Chee Keong|kevin.ng@gmail.com|+60 14-777 8899|1994-04-02|AB-|Penicillin & Dust Allergy|+60 14-999 0011|true
 PATIENT|USR-027|siti_fatimah|pass123|Siti Fatimah binti Hamzah|fatimah@gmail.com|+60 18-888 9900|2001-06-22|A+|No chronic history|+60 18-000 1122|true
+PATIENT|USR-97CBEB|amy|123456|amy lee|amy@gmail.com|123456789|1995-08-15|A+|||true
