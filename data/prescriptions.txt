@@ -1,2 +1,3 @@
-# Prescription Data Storage: rxId|apptId|patientId|patientName|doctorId|doctorName|medication|dosage|instructions|status
-RX-5001|APT-1003|USR-007|Tan Ah Hock|USR-004|Dr. Kavitha a/p Subramaniam|Vitamin D3 1000 IU|1 tablet daily|Take 1 tablet daily after breakfast with water.|DISPENSED
+# Prescription Data Storage: rxId|apptId|patientId|patientName|doctorId|doctorName|medication|dosage|instructions|status|dispensedByPharmacistName|pharmacySection
+RX-5001|APT-1003|USR-020|Chong Wei Ming|USR-004|Dr. Kavitha a/p Subramaniam|Vitamin D3 1000 IU|1 tablet daily|Take 1 tablet daily after breakfast with water.|DISPENSED|Wong Wei Jun (Pharmacist)|Main Pharmacy Store
+RX-5002|APT-1004|USR-021|Kamala a/p Krishnan|USR-009|Dr. Suresh Kumar a/l Raman|Glucosamine Sulfate 500mg|2 capsules daily|Take after lunch for joint lubrication.|PREPARING|Priya a/p Ramesh (Pharmacist)|Outpatient Pharmacy Counter 2

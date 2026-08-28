@@ -125,6 +125,9 @@ public class AppointmentService {
 
         // Validate Doctor Start Consultation (IN_CONSULTATION status)
         if (newStatus == AppointmentStatus.IN_CONSULTATION) {
+            if (appt.getStatus() == AppointmentStatus.SCHEDULED) {
+                throw new InvalidRecordException("Patient has not been checked in by the Nurse yet. Appointment status must be WAITING before Doctor can start consultation.");
+            }
             if (appt.getStatus() == AppointmentStatus.IN_CONSULTATION) {
                 throw new InvalidRecordException("Consultation is already in progress for this patient.");
             }

@@ -4,11 +4,11 @@ import com.healthcare.exception.InvalidRecordException;
 import com.healthcare.model.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * Service managing medication prescription workflow from issue to dispensing with strict status validation.
+ * Service managing medication prescription workflow from issue to dispensing with strict status validation
+ * and dispensing pharmacist tracking.
  */
 public class PrescriptionService {
     private final DataStorageService dataStorage;
@@ -39,7 +39,7 @@ public class PrescriptionService {
         return rx;
     }
 
-    public void updatePrescriptionStatus(String rxId, PrescriptionStatus status) throws InvalidRecordException {
+    public void updatePrescriptionStatus(String rxId, PrescriptionStatus status, Pharmacist pharmacist) throws InvalidRecordException {
         Prescription rx = dataStorage.getPrescriptions().get(rxId);
         if (rx == null) {
             throw new InvalidRecordException("Prescription record not found.");
@@ -61,11 +61,17 @@ public class PrescriptionService {
         }
 
         rx.setStatus(status);
+        if (pharmacist != null) {
+            rx.setDispensedByPharmacistId(pharmacist.getUserId());
+            rx.setDispensedByPharmacistName(pharmacist.getFullName());
+            rx.setPharmacySection(pharmacist.getPharmacySection());
+        }
         dataStorage.saveData();
 
         if (status == PrescriptionStatus.DISPENSED) {
+            String pharmInfo = pharmacist != null ? pharmacist.getFullName() + " (" + pharmacist.getPharmacySection() + ")" : "Pharmacy";
             notificationService.createNotification(rx.getPatientId(), "Medication Ready", 
-                "Your medication (" + rx.getMedicationName() + ") has been dispensed by the pharmacy.", "MEDICATION");
+                "Your medication (" + rx.getMedicationName() + ") has been dispensed by Pharmacist " + pharmInfo + ".", "MEDICATION");
         }
     }
 

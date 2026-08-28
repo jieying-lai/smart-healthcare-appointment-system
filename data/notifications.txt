@@ -1,8 +1,4 @@
 # Notification Data Storage: notifId|recipientId|title|message|type|isRead
-NOTIF-8090F0|USR-002|Appointment Cancelled|Appointment APT-1004 with Tan Ah Hock has been cancelled.|APPOINTMENT|false
-NOTIF-C7E106|USR-007|Appointment Cancelled|Appointment APT-1004 has been cancelled. Reason: a|APPOINTMENT|false
-NOTIF-D7A9E1|USR-002|New Booking|New appointment APT-1004 scheduled with Tan Ah Hock for 2026-08-29 at 09:30.|APPOINTMENT|false
-NOTIF-5FC329|USR-007|Appointment Booked|Appointment APT-1004 booked with Dr. Ahmad Razali bin Hassan for 2026-08-29 at 09:30.|APPOINTMENT|false
-NOTIF-DFDC22|USR-007|Medication Ready|Your medication (Vitamin D3 1000 IU) has been dispensed by the pharmacy.|MEDICATION|true
-NOTIF-101|USR-007|Appointment Confirmed|Your appointment with Dr. Ahmad Razali has been confirmed for today at 09:30 AM.|APPOINTMENT|true
+NOTIF-101|USR-007|Appointment Confirmed|Your appointment with Dr. Ahmad Razali has been confirmed for today at 09:30 AM.|APPOINTMENT|false
 NOTIF-102|USR-008|Queue Status Update|Nurse Siti Nurhaliza has checked you in. Please proceed to Waiting Room B.|STATUS_CHANGE|false
+NOTIF-103|USR-020|Medication Dispensed|Your medication (Vitamin D3 1000 IU) has been dispensed by Pharmacist Wong Wei Jun at Main Pharmacy Store.|MEDICATION|false

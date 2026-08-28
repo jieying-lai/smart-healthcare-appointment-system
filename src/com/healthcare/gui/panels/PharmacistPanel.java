@@ -110,6 +110,7 @@ public class PharmacistPanel extends JPanel {
         addFormRow(panel, gbc, "Prescription ID:", new JLabel(rx.getPrescriptionId()), y++);
         addFormRow(panel, gbc, "Patient Name:", new JLabel(rx.getPatientName() + " (" + rx.getPatientId() + ")"), y++);
         addFormRow(panel, gbc, "Prescribing Doctor:", new JLabel(rx.getDoctorName() + " (" + rx.getDoctorId() + ")"), y++);
+        addFormRow(panel, gbc, "Dispensing Pharmacy:", new JLabel(rx.getDispensedByPharmacistName() + " (" + rx.getPharmacySection() + ")"), y++);
         addFormRow(panel, gbc, "Medication Name:", new JLabel(rx.getMedicationName()), y++);
         addFormRow(panel, gbc, "Dosage:", new JLabel(rx.getDosage()), y++);
         addFormRow(panel, gbc, "Status:", new JLabel(rx.getStatus().getLabel()), y++);
@@ -173,8 +174,8 @@ public class PharmacistPanel extends JPanel {
 
         String rxId = (String) rxTableModel.getValueAt(row, 0);
         try {
-            prescriptionService.updatePrescriptionStatus(rxId, status);
-            JOptionPane.showMessageDialog(this, "Prescription status updated to: " + status.getLabel(), "Updated", JOptionPane.INFORMATION_MESSAGE);
+            prescriptionService.updatePrescriptionStatus(rxId, status, pharmacist);
+            JOptionPane.showMessageDialog(this, "Prescription status updated to: " + status.getLabel() + " by " + pharmacist.getFullName() + " (" + pharmacist.getPharmacySection() + ")", "Status Updated", JOptionPane.INFORMATION_MESSAGE);
             refreshTable();
         } catch (InvalidRecordException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);

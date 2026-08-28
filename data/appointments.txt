@@ -1,5 +1,6 @@
 # Appointment Data Storage: apptId|patientId|patientName|doctorId|doctorName|date|time|status|reason|notes|fee
-APT-1004|USR-007|Tan Ah Hock|USR-002|Dr. Ahmad Razali bin Hassan|2026-08-29|09:30|CANCELLED|w||150.0
-APT-1003|USR-007|Tan Ah Hock|USR-004|Dr. Kavitha a/p Subramaniam|2026-08-27|14:00|COMPLETED|Routine Health Checkup|Patient is in healthy condition. Prescribed Vitamin D3 supplement.|110.0
-APT-1002|USR-008|Nur Aisyah binti Ismail|USR-003|Dr. Lee Mei Ling|2026-08-28|10:30|WAITING|Skin Consultation & Rash Check||120.0
 APT-1001|USR-007|Tan Ah Hock|USR-002|Dr. Ahmad Razali bin Hassan|2026-08-28|09:30|SCHEDULED|Annual Cardiology Checkup||150.0
+APT-1002|USR-008|Nur Aisyah binti Ismail|USR-003|Dr. Lee Mei Ling|2026-08-28|10:30|WAITING|Skin Consultation & Rash Check||120.0
+APT-1003|USR-020|Chong Wei Ming|USR-004|Dr. Kavitha a/p Subramaniam|2026-08-27|14:00|COMPLETED|Routine Pediatric Checkup|Patient in healthy condition. Prescribed Vitamin D3 1000 IU.|110.0
+APT-1004|USR-021|Kamala a/p Krishnan|USR-009|Dr. Suresh Kumar a/l Raman|2026-08-28|11:00|WAITING|Knee Joint Pain Consultation||160.0
+APT-1005|USR-022|Ahmad Faiz bin Zulkifli|USR-010|Dr. Nurul Huda binti Azman|2026-08-29|15:00|SCHEDULED|Neurology Headache Evaluation||180.0

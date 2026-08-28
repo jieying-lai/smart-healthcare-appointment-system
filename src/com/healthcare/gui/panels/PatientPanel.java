@@ -230,7 +230,8 @@ public class PatientPanel extends JPanel {
 
         int y = 0;
         addFormRow(panel, gbc, "Prescription ID:", new JLabel(rx.getPrescriptionId()), y++);
-        addFormRow(panel, gbc, "Doctor Name:", new JLabel(rx.getDoctorName()), y++);
+        addFormRow(panel, gbc, "Prescribing Doctor:", new JLabel(rx.getDoctorName()), y++);
+        addFormRow(panel, gbc, "Dispensing Pharmacy:", new JLabel(rx.getDispensedByPharmacistName() + " (" + rx.getPharmacySection() + ")"), y++);
         addFormRow(panel, gbc, "Medication Name:", new JLabel(rx.getMedicationName()), y++);
         addFormRow(panel, gbc, "Dosage:", new JLabel(rx.getDosage()), y++);
         addFormRow(panel, gbc, "Status:", new JLabel(rx.getStatus().getLabel()), y++);

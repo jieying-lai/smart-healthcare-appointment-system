@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 
 /**
  * Model for Prescriptions issued by doctors and dispensed by pharmacists.
+ * Tracks prescribing doctor as well as dispensing pharmacist & pharmacy section/counter.
  */
 public class Prescription implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -22,6 +23,11 @@ public class Prescription implements Serializable {
     private PrescriptionStatus status;
     private LocalDateTime issuedAt;
 
+    // Dispensing Pharmacist & Pharmacy Section Details
+    private String dispensedByPharmacistId;
+    private String dispensedByPharmacistName;
+    private String pharmacySection;
+
     public Prescription(String prescriptionId, String appointmentId, String patientId, 
                         String patientName, String doctorId, String doctorName, 
                         String medicationName, String dosage, String instructions) {
@@ -36,6 +42,9 @@ public class Prescription implements Serializable {
         this.instructions = instructions;
         this.status = PrescriptionStatus.PENDING;
         this.issuedAt = LocalDateTime.now();
+        this.dispensedByPharmacistId = "-";
+        this.dispensedByPharmacistName = "Pending Dispensing";
+        this.pharmacySection = "Central Pharmacy";
     }
 
     public String getPrescriptionId() {
@@ -100,5 +109,29 @@ public class Prescription implements Serializable {
 
     public String getFormattedIssuedAt() {
         return issuedAt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+    }
+
+    public String getDispensedByPharmacistId() {
+        return dispensedByPharmacistId;
+    }
+
+    public void setDispensedByPharmacistId(String dispensedByPharmacistId) {
+        this.dispensedByPharmacistId = dispensedByPharmacistId;
+    }
+
+    public String getDispensedByPharmacistName() {
+        return dispensedByPharmacistName;
+    }
+
+    public void setDispensedByPharmacistName(String dispensedByPharmacistName) {
+        this.dispensedByPharmacistName = dispensedByPharmacistName;
+    }
+
+    public String getPharmacySection() {
+        return pharmacySection;
+    }
+
+    public void setPharmacySection(String pharmacySection) {
+        this.pharmacySection = pharmacySection;
     }
 }

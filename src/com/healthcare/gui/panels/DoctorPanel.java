@@ -309,8 +309,8 @@ public class DoctorPanel extends JPanel {
             String dosage = dosageField.getText().trim();
             String inst = instructionsField.getText().trim();
 
-            if (med.isEmpty()) {
-                JOptionPane.showMessageDialog(dialog, "Medication name cannot be empty.", "Validation Error", JOptionPane.WARNING_MESSAGE);
+            if (med.isEmpty() || dosage.isEmpty() || inst.isEmpty()) {
+                JOptionPane.showMessageDialog(dialog, "Medication name, dosage, and instructions must all be filled in.", "Validation Error", JOptionPane.WARNING_MESSAGE);
                 return;
             }
 
