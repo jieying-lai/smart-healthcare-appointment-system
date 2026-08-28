@@ -11,6 +11,8 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
 /**
@@ -39,6 +41,9 @@ public class PharmacistPanel extends JPanel {
         JPanel toolbar = ModernTheme.createCardPanel();
         toolbar.setLayout(new FlowLayout(FlowLayout.LEFT, 12, 0));
 
+        JButton viewDetailsBtn = ModernTheme.createSecondaryButton("View Full Details");
+        viewDetailsBtn.addActionListener(e -> handleViewDetails());
+
         JButton startPrepBtn = ModernTheme.createSecondaryButton("Mark PREPARING");
         startPrepBtn.addActionListener(e -> setStatus(PrescriptionStatus.PREPARING));
 
@@ -49,6 +54,7 @@ public class PharmacistPanel extends JPanel {
         JButton refreshBtn = ModernTheme.createSecondaryButton("Refresh Prescriptions");
         refreshBtn.addActionListener(e -> refreshTable());
 
+        toolbar.add(viewDetailsBtn);
         toolbar.add(startPrepBtn);
         toolbar.add(dispenseBtn);
         toolbar.add(refreshBtn);
@@ -63,7 +69,82 @@ public class PharmacistPanel extends JPanel {
         rxTable = new JTable(rxTableModel);
         ModernTheme.styleTable(rxTable);
 
+        rxTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) handleViewDetails();
+            }
+        });
+
         add(new JScrollPane(rxTable), BorderLayout.CENTER);
+    }
+
+    private void handleViewDetails() {
+        int row = rxTable.getSelectedRow();
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this, "Please select a prescription from the table first.", "Selection Required", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        String rxId = (String) rxTableModel.getValueAt(row, 0);
+        Prescription rx = prescriptionService.getAllPrescriptions().stream()
+            .filter(r -> r.getPrescriptionId().equals(rxId)).findFirst().orElse(null);
+
+        if (rx != null) {
+            showFullDetailsDialog(rx);
+        }
+    }
+
+    private void showFullDetailsDialog(Prescription rx) {
+        JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Prescription Details - " + rx.getPrescriptionId(), true);
+        dialog.setSize(480, 380);
+        dialog.setLocationRelativeTo(this);
+
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBorder(new EmptyBorder(16, 16, 16, 16));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(6, 6, 6, 6);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        int y = 0;
+        addFormRow(panel, gbc, "Prescription ID:", new JLabel(rx.getPrescriptionId()), y++);
+        addFormRow(panel, gbc, "Patient Name:", new JLabel(rx.getPatientName() + " (" + rx.getPatientId() + ")"), y++);
+        addFormRow(panel, gbc, "Prescribing Doctor:", new JLabel(rx.getDoctorName() + " (" + rx.getDoctorId() + ")"), y++);
+        addFormRow(panel, gbc, "Medication Name:", new JLabel(rx.getMedicationName()), y++);
+        addFormRow(panel, gbc, "Dosage:", new JLabel(rx.getDosage()), y++);
+        addFormRow(panel, gbc, "Status:", new JLabel(rx.getStatus().getLabel()), y++);
+
+        JTextArea instArea = new JTextArea(rx.getInstructions() != null ? rx.getInstructions() : "No special instructions.");
+        instArea.setEditable(false);
+        instArea.setLineWrap(true);
+        instArea.setWrapStyleWord(true);
+        instArea.setFont(ModernTheme.FONT_REGULAR);
+
+        gbc.gridx = 0; gbc.gridy = y; gbc.gridwidth = 1; gbc.weightx = 0.3;
+        JLabel instLbl = new JLabel("Instructions:");
+        instLbl.setFont(ModernTheme.FONT_BOLD);
+        panel.add(instLbl, gbc);
+
+        gbc.gridx = 1; gbc.gridy = y++; gbc.gridwidth = 1; gbc.weightx = 0.7;
+        panel.add(new JScrollPane(instArea), gbc);
+
+        JButton closeBtn = ModernTheme.createPrimaryButton("Close");
+        closeBtn.addActionListener(e -> dialog.dispose());
+        gbc.gridx = 0; gbc.gridy = y; gbc.gridwidth = 2; gbc.weightx = 1.0;
+        panel.add(closeBtn, gbc);
+
+        dialog.add(panel);
+        dialog.setVisible(true);
+    }
+
+    private void addFormRow(JPanel panel, GridBagConstraints gbc, String labelText, Component comp, int row) {
+        gbc.gridx = 0; gbc.gridy = row; gbc.gridwidth = 1; gbc.weightx = 0.3;
+        JLabel lbl = new JLabel(labelText);
+        lbl.setFont(ModernTheme.FONT_BOLD);
+        panel.add(lbl, gbc);
+
+        gbc.gridx = 1; gbc.gridy = row; gbc.gridwidth = 1; gbc.weightx = 0.7;
+        panel.add(comp, gbc);
     }
 
     public void refreshTable() {

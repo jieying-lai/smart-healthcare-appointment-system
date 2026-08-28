@@ -5,9 +5,13 @@ import com.healthcare.model.*;
 import com.healthcare.service.*;
 
 import javax.swing.*;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
 /**
@@ -36,7 +40,7 @@ public class MainDashboardFrame extends JFrame {
         this.onLogout = onLogout;
 
         setTitle("Smart Healthcare Management System - " + currentUser.getFullName() + " (" + currentUser.getRole().getDisplayName() + ")");
-        setSize(1100, 720);
+        setSize(1120, 740);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -107,8 +111,8 @@ public class MainDashboardFrame extends JFrame {
         if (role == Role.PATIENT) {
             mainTabbedPane.addTab("My Appointments & Bookings", new PatientPanel(authService, appointmentService, prescriptionService, (Patient) currentUser));
         } else if (role == Role.DOCTOR) {
+            // DOCTOR ROLE: Focus strictly on Patient Consultation Queue & Prescriptions (NO Admin Reports)
             mainTabbedPane.addTab("Consultation Queue & Patients", new DoctorPanel((Doctor) currentUser, appointmentService, prescriptionService));
-            mainTabbedPane.addTab("Executive Reports", new ReportPanel(reportService));
         } else if (role == Role.NURSE) {
             mainTabbedPane.addTab("Nurse Patient Check-In Queue", new NursePanel(appointmentService, (Nurse) currentUser));
         } else if (role == Role.PHARMACIST) {
@@ -131,11 +135,19 @@ public class MainDashboardFrame extends JFrame {
 
         JPanel headerCard = ModernTheme.createCardPanel();
         headerCard.setLayout(new BorderLayout());
-        JLabel lbl = new JLabel("System Master Appointments Registry (Read-Only Overview)");
+        JLabel lbl = new JLabel("System Master Appointments Registry (Double-click any row to view full details)");
         lbl.setFont(ModernTheme.FONT_TITLE);
+
+        JPanel btnBox = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+        btnBox.setOpaque(false);
+
+        JButton viewBtn = ModernTheme.createSecondaryButton("View Full Details");
         JButton refreshBtn = ModernTheme.createPrimaryButton("Refresh Overview");
+        btnBox.add(viewBtn);
+        btnBox.add(refreshBtn);
+
         headerCard.add(lbl, BorderLayout.WEST);
-        headerCard.add(refreshBtn, BorderLayout.EAST);
+        headerCard.add(btnBox, BorderLayout.EAST);
         panel.add(headerCard, BorderLayout.NORTH);
 
         String[] cols = {"Appt ID", "Patient Name", "Doctor Name", "Date", "Time", "Reason for Visit", "Fee (RM)", "Status", "Notes"};
@@ -158,9 +170,30 @@ public class MainDashboardFrame extends JFrame {
             }
         };
 
-        refreshBtn.addActionListener(e -> loadData.run());
-        loadData.run();
+        Runnable showDetails = () -> {
+            int row = table.getSelectedRow();
+            if (row == -1) {
+                JOptionPane.showMessageDialog(panel, "Please select an appointment from the table.", "Selection Required", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            String apptId = (String) model.getValueAt(row, 0);
+            Appointment appt = appointmentService.getAllAppointments().stream()
+                .filter(a -> a.getAppointmentId().equals(apptId)).findFirst().orElse(null);
+            if (appt != null) {
+                showFullAppointmentDialog(appt);
+            }
+        };
 
+        viewBtn.addActionListener(e -> showDetails.run());
+        refreshBtn.addActionListener(e -> loadData.run());
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) showDetails.run();
+            }
+        });
+
+        loadData.run();
         panel.add(new JScrollPane(table), BorderLayout.CENTER);
         return panel;
     }
@@ -172,11 +205,19 @@ public class MainDashboardFrame extends JFrame {
 
         JPanel headerCard = ModernTheme.createCardPanel();
         headerCard.setLayout(new BorderLayout());
-        JLabel lbl = new JLabel("System Master Pharmacy Prescriptions Registry (Read-Only Overview)");
+        JLabel lbl = new JLabel("System Master Pharmacy Prescriptions Registry (Double-click any row for full details)");
         lbl.setFont(ModernTheme.FONT_TITLE);
+
+        JPanel btnBox = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+        btnBox.setOpaque(false);
+
+        JButton viewBtn = ModernTheme.createSecondaryButton("View Full Details");
         JButton refreshBtn = ModernTheme.createPrimaryButton("Refresh Prescriptions");
+        btnBox.add(viewBtn);
+        btnBox.add(refreshBtn);
+
         headerCard.add(lbl, BorderLayout.WEST);
-        headerCard.add(refreshBtn, BorderLayout.EAST);
+        headerCard.add(btnBox, BorderLayout.EAST);
         panel.add(headerCard, BorderLayout.NORTH);
 
         String[] cols = {"Prescription ID", "Appt ID", "Patient Name", "Doctor Name", "Medication Name", "Dosage", "Instructions", "Status"};
@@ -198,9 +239,30 @@ public class MainDashboardFrame extends JFrame {
             }
         };
 
-        refreshBtn.addActionListener(e -> loadData.run());
-        loadData.run();
+        Runnable showDetails = () -> {
+            int row = table.getSelectedRow();
+            if (row == -1) {
+                JOptionPane.showMessageDialog(panel, "Please select a prescription from the table.", "Selection Required", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            String rxId = (String) model.getValueAt(row, 0);
+            Prescription rx = prescriptionService.getAllPrescriptions().stream()
+                .filter(r -> r.getPrescriptionId().equals(rxId)).findFirst().orElse(null);
+            if (rx != null) {
+                showFullPrescriptionDialog(rx);
+            }
+        };
 
+        viewBtn.addActionListener(e -> showDetails.run());
+        refreshBtn.addActionListener(e -> loadData.run());
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) showDetails.run();
+            }
+        });
+
+        loadData.run();
         panel.add(new JScrollPane(table), BorderLayout.CENTER);
         return panel;
     }
@@ -211,32 +273,157 @@ public class MainDashboardFrame extends JFrame {
         notifBtn.setText("Notifications (0)");
 
         JDialog dialog = new JDialog(this, "System Notifications & Alerts", true);
-        dialog.setSize(520, 380);
+        dialog.setSize(580, 440);
         dialog.setLocationRelativeTo(this);
 
         JPanel panel = new JPanel(new BorderLayout(0, 12));
+        panel.setBackground(ModernTheme.BACKGROUND);
         panel.setBorder(new EmptyBorder(16, 16, 16, 16));
 
-        JLabel title = new JLabel("Your Recent Notifications (" + notifs.size() + ")");
+        JLabel title = new JLabel("Notification Center (" + notifs.size() + " messages)");
         title.setFont(ModernTheme.FONT_TITLE);
         panel.add(title, BorderLayout.NORTH);
 
-        DefaultListModel<String> listModel = new DefaultListModel<>();
+        JPanel cardsList = new JPanel();
+        cardsList.setLayout(new BoxLayout(cardsList, BoxLayout.Y_AXIS));
+        cardsList.setOpaque(false);
+
         if (notifs.isEmpty()) {
-            listModel.addElement("No notifications found.");
+            JPanel emptyCard = ModernTheme.createCardPanel();
+            emptyCard.add(new JLabel("No notifications available."));
+            cardsList.add(emptyCard);
         } else {
             for (Notification n : notifs) {
-                listModel.addElement("[" + n.getFormattedTimestamp() + "] [" + n.getType() + "] " + n.getTitle() + ": " + n.getMessage());
+                JPanel card = new JPanel(new BorderLayout(8, 4));
+                card.setBackground(Color.WHITE);
+                card.setBorder(new CompoundBorder(
+                    new LineBorder(new Color(226, 232, 240), 1, true),
+                    new EmptyBorder(10, 12, 10, 12)
+                ));
+
+                JLabel typeTag = new JLabel(" [" + n.getType() + "] " + n.getTitle() + " ");
+                typeTag.setFont(ModernTheme.FONT_BOLD);
+                typeTag.setOpaque(true);
+                typeTag.setBackground(ModernTheme.PRIMARY_LIGHT);
+                typeTag.setForeground(ModernTheme.PRIMARY_DARK);
+
+                JLabel timeLbl = new JLabel(n.getFormattedTimestamp());
+                timeLbl.setFont(ModernTheme.FONT_SMALL);
+
+                JPanel cardHeader = new JPanel(new BorderLayout());
+                cardHeader.setOpaque(false);
+                cardHeader.add(typeTag, BorderLayout.WEST);
+                cardHeader.add(timeLbl, BorderLayout.EAST);
+
+                JTextArea msgArea = new JTextArea(n.getMessage());
+                msgArea.setFont(ModernTheme.FONT_REGULAR);
+                msgArea.setLineWrap(true);
+                msgArea.setWrapStyleWord(true);
+                msgArea.setEditable(false);
+                msgArea.setOpaque(false);
+                msgArea.setBorder(new EmptyBorder(4, 0, 0, 0));
+
+                card.add(cardHeader, BorderLayout.NORTH);
+                card.add(msgArea, BorderLayout.CENTER);
+
+                cardsList.add(card);
+                cardsList.add(Box.createRigidArea(new Dimension(0, 8)));
             }
         }
 
-        JList<String> list = new JList<>(listModel);
-        list.setFont(ModernTheme.FONT_REGULAR);
-        panel.add(new JScrollPane(list), BorderLayout.CENTER);
+        JScrollPane scroll = new JScrollPane(cardsList);
+        scroll.setBorder(null);
+        scroll.getViewport().setBackground(ModernTheme.BACKGROUND);
+        panel.add(scroll, BorderLayout.CENTER);
+
+        JButton closeBtn = ModernTheme.createPrimaryButton("Close Notification Center");
+        closeBtn.addActionListener(e -> dialog.dispose());
+        panel.add(closeBtn, BorderLayout.SOUTH);
+
+        dialog.add(panel);
+        dialog.setVisible(true);
+    }
+
+    private void showFullAppointmentDialog(Appointment appt) {
+        JDialog dialog = new JDialog(this, "Appointment Record Details - " + appt.getAppointmentId(), true);
+        dialog.setSize(480, 420);
+        dialog.setLocationRelativeTo(this);
+
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBorder(new EmptyBorder(16, 16, 16, 16));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(6, 6, 6, 6);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        int y = 0;
+        addFormRow(panel, gbc, "Appointment ID:", new JLabel(appt.getAppointmentId()), y++);
+        addFormRow(panel, gbc, "Patient Name:", new JLabel(appt.getPatientName() + " (" + appt.getPatientId() + ")"), y++);
+        addFormRow(panel, gbc, "Doctor Name:", new JLabel(appt.getDoctorName() + " (" + appt.getDoctorId() + ")"), y++);
+        addFormRow(panel, gbc, "Date & Time:", new JLabel(appt.getAppointmentDate() + " at " + appt.getAppointmentTime()), y++);
+        addFormRow(panel, gbc, "Status:", new JLabel(appt.getStatus().getLabel()), y++);
+        addFormRow(panel, gbc, "Consultation Fee:", new JLabel(String.format("RM %.2f", appt.getFee())), y++);
+        addFormRow(panel, gbc, "Reason for Visit:", new JLabel(appt.getReason()), y++);
+
+        JTextArea notesArea = new JTextArea(appt.getConsultationNotes() != null ? appt.getConsultationNotes() : "No notes recorded.");
+        notesArea.setEditable(false);
+        notesArea.setLineWrap(true);
+        notesArea.setWrapStyleWord(true);
+        notesArea.setFont(ModernTheme.FONT_REGULAR);
+
+        gbc.gridx = 0; gbc.gridy = y; gbc.gridwidth = 1; gbc.weightx = 0.3;
+        JLabel notesLbl = new JLabel("Consultation Notes:");
+        notesLbl.setFont(ModernTheme.FONT_BOLD);
+        panel.add(notesLbl, gbc);
+
+        gbc.gridx = 1; gbc.gridy = y++; gbc.gridwidth = 1; gbc.weightx = 0.7;
+        panel.add(new JScrollPane(notesArea), gbc);
 
         JButton closeBtn = ModernTheme.createPrimaryButton("Close");
         closeBtn.addActionListener(e -> dialog.dispose());
-        panel.add(closeBtn, BorderLayout.SOUTH);
+        gbc.gridx = 0; gbc.gridy = y; gbc.gridwidth = 2;
+        panel.add(closeBtn, gbc);
+
+        dialog.add(panel);
+        dialog.setVisible(true);
+    }
+
+    private void showFullPrescriptionDialog(Prescription rx) {
+        JDialog dialog = new JDialog(this, "Prescription Details - " + rx.getPrescriptionId(), true);
+        dialog.setSize(480, 380);
+        dialog.setLocationRelativeTo(this);
+
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBorder(new EmptyBorder(16, 16, 16, 16));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(6, 6, 6, 6);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        int y = 0;
+        addFormRow(panel, gbc, "Prescription ID:", new JLabel(rx.getPrescriptionId()), y++);
+        addFormRow(panel, gbc, "Patient Name:", new JLabel(rx.getPatientName()), y++);
+        addFormRow(panel, gbc, "Doctor Name:", new JLabel(rx.getDoctorName()), y++);
+        addFormRow(panel, gbc, "Medication Name:", new JLabel(rx.getMedicationName()), y++);
+        addFormRow(panel, gbc, "Dosage:", new JLabel(rx.getDosage()), y++);
+        addFormRow(panel, gbc, "Status:", new JLabel(rx.getStatus().getLabel()), y++);
+
+        JTextArea instArea = new JTextArea(rx.getInstructions() != null ? rx.getInstructions() : "No special instructions.");
+        instArea.setEditable(false);
+        instArea.setLineWrap(true);
+        instArea.setWrapStyleWord(true);
+        instArea.setFont(ModernTheme.FONT_REGULAR);
+
+        gbc.gridx = 0; gbc.gridy = y; gbc.gridwidth = 1; gbc.weightx = 0.3;
+        JLabel instLbl = new JLabel("Instructions:");
+        instLbl.setFont(ModernTheme.FONT_BOLD);
+        panel.add(instLbl, gbc);
+
+        gbc.gridx = 1; gbc.gridy = y++; gbc.gridwidth = 1; gbc.weightx = 0.7;
+        panel.add(new JScrollPane(instArea), gbc);
+
+        JButton closeBtn = ModernTheme.createPrimaryButton("Close");
+        closeBtn.addActionListener(e -> dialog.dispose());
+        gbc.gridx = 0; gbc.gridy = y; gbc.gridwidth = 2;
+        panel.add(closeBtn, gbc);
 
         dialog.add(panel);
         dialog.setVisible(true);
