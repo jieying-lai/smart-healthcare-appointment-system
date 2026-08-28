@@ -37,8 +37,11 @@ public class AppointmentService {
 
         Doctor doc = (Doctor) doctor;
 
-        // Check slot conflict
-        checkSlotConflict(doctorId, date, time, null);
+        // Check Doctor slot conflict
+        checkDoctorSlotConflict(doctorId, date, time, null);
+
+        // Check Patient slot conflict (Patient cannot book 2 appointments at the same date & time with any doctor)
+        checkPatientSlotConflict(patientId, date, time, null);
 
         String apptId = "APT-" + (1000 + dataStorage.getAppointments().size() + 1);
         Appointment appointment = new Appointment(apptId, patient.getUserId(), patient.getFullName(), 
@@ -63,14 +66,17 @@ public class AppointmentService {
         if (appt == null) {
             throw new InvalidRecordException("Appointment record not found.");
         }
-        if (appt.getStatus() == AppointmentStatus.COMPLETED || appt.getStatus() == AppointmentStatus.CANCELLED) {
-            throw new InvalidRecordException("Cannot reschedule a completed or cancelled appointment.");
+        if (appt.getStatus() == AppointmentStatus.COMPLETED || 
+            appt.getStatus() == AppointmentStatus.CANCELLED || 
+            appt.getStatus() == AppointmentStatus.IN_CONSULTATION) {
+            throw new InvalidRecordException("Cannot reschedule a completed, in-consultation, or cancelled appointment.");
         }
         if (newDate.isBefore(LocalDate.now())) {
             throw new InvalidRecordException("Rescheduled date cannot be in the past.");
         }
 
-        checkSlotConflict(appt.getDoctorId(), newDate, newTime, appointmentId);
+        checkDoctorSlotConflict(appt.getDoctorId(), newDate, newTime, appointmentId);
+        checkPatientSlotConflict(appt.getPatientId(), newDate, newTime, appointmentId);
 
         appt.setAppointmentDate(newDate);
         appt.setAppointmentTime(newTime);
@@ -86,7 +92,13 @@ public class AppointmentService {
             throw new InvalidRecordException("Appointment record not found.");
         }
         if (appt.getStatus() == AppointmentStatus.COMPLETED) {
-            throw new InvalidRecordException("Completed appointments cannot be cancelled.");
+            throw new InvalidRecordException("Cannot cancel an appointment that is already completed.");
+        }
+        if (appt.getStatus() == AppointmentStatus.CANCELLED) {
+            throw new InvalidRecordException("Appointment is already cancelled.");
+        }
+        if (appt.getStatus() == AppointmentStatus.IN_CONSULTATION) {
+            throw new InvalidRecordException("Cannot cancel an appointment that is currently in consultation.");
         }
 
         appt.setStatus(AppointmentStatus.CANCELLED);
@@ -104,6 +116,23 @@ public class AppointmentService {
             throw new InvalidRecordException("Appointment record not found.");
         }
 
+        // Validate Nurse Check-In (WAITING status)
+        if (newStatus == AppointmentStatus.WAITING) {
+            if (appt.getStatus() != AppointmentStatus.SCHEDULED) {
+                throw new InvalidRecordException("Only SCHEDULED appointments can be checked in.");
+            }
+        }
+
+        // Validate Doctor Start Consultation (IN_CONSULTATION status)
+        if (newStatus == AppointmentStatus.IN_CONSULTATION) {
+            if (appt.getStatus() == AppointmentStatus.IN_CONSULTATION) {
+                throw new InvalidRecordException("Consultation is already in progress for this patient.");
+            }
+            if (appt.getStatus() == AppointmentStatus.COMPLETED || appt.getStatus() == AppointmentStatus.CANCELLED) {
+                throw new InvalidRecordException("Cannot start consultation for a completed or cancelled appointment.");
+            }
+        }
+
         appt.setStatus(newStatus);
         dataStorage.saveData();
 
@@ -116,6 +145,12 @@ public class AppointmentService {
         if (appt == null) {
             throw new InvalidRecordException("Appointment record not found.");
         }
+        if (appt.getStatus() == AppointmentStatus.COMPLETED) {
+            throw new InvalidRecordException("This consultation has already been completed.");
+        }
+        if (appt.getStatus() == AppointmentStatus.CANCELLED) {
+            throw new InvalidRecordException("Cannot record consultation notes for a cancelled appointment.");
+        }
 
         appt.setConsultationNotes(notes);
         appt.setStatus(AppointmentStatus.COMPLETED);
@@ -125,7 +160,7 @@ public class AppointmentService {
             "Dr. " + appt.getDoctorName() + " has completed your consultation for appointment " + appointmentId + ".", "STATUS_CHANGE");
     }
 
-    private void checkSlotConflict(String doctorId, LocalDate date, LocalTime time, String currentApptId) 
+    private void checkDoctorSlotConflict(String doctorId, LocalDate date, LocalTime time, String currentApptId) 
             throws SlotConflictException {
         for (Appointment appt : dataStorage.getAppointments().values()) {
             if (appt.getDoctorId().equals(doctorId) && 
@@ -136,6 +171,22 @@ public class AppointmentService {
                 if (currentApptId == null || !appt.getAppointmentId().equals(currentApptId)) {
                     throw new SlotConflictException("Doctor already has an appointment booked on " + 
                                                       date + " at " + time + ". Please select another time slot.");
+                }
+            }
+        }
+    }
+
+    private void checkPatientSlotConflict(String patientId, LocalDate date, LocalTime time, String currentApptId) 
+            throws SlotConflictException {
+        for (Appointment appt : dataStorage.getAppointments().values()) {
+            if (appt.getPatientId().equals(patientId) && 
+                appt.getAppointmentDate().equals(date) && 
+                appt.getAppointmentTime().equals(time) && 
+                appt.getStatus() != AppointmentStatus.CANCELLED) {
+                
+                if (currentApptId == null || !appt.getAppointmentId().equals(currentApptId)) {
+                    throw new SlotConflictException("You already have an appointment booked on " + 
+                                                      date + " at " + time + ". Patients cannot book multiple appointments at the exact same time slot.");
                 }
             }
         }

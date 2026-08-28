@@ -254,8 +254,8 @@ public class DataStorageService {
         System.out.println("Initializing default Malaysian healthcare sample accounts and records...");
 
         // 1. Admin (Malaysian)
-        Admin admin = new Admin("USR-001", "admin", "admin123", "Tan Jin Heng (Admin Alex)", 
-                                "alex.tan@pantai.com.my", "+60 12-345 6789", "Level 5 Super Admin");
+        Admin admin = new Admin("USR-001", "admin", "admin123", "Lai Jie Ying", 
+                                "jieying@pantai.com.my", "+60 12-345 6789", "Level 5 System Administrator");
         users.put(admin.getUserId(), admin);
 
         // 2. Doctors (Malaysian - Malay, Chinese, Indian)
@@ -274,57 +274,57 @@ public class DataStorageService {
 
         // 3. Nurse (Malaysian)
         Nurse nurse1 = new Nurse("USR-005", "nurse_siti", "nurse123", "Nurse Siti Nurhaliza binti Ali", 
-                                 "snurhaliza@pantai.com.my", "+60 13-556 7890", "Jabatan Pesakit Luar", "Syif Pagi (08:00 - 16:00)");
+                                 "snurhaliza@pantai.com.my", "+60 13-556 7890", "Outpatient Department", "Morning Shift (08:00 - 16:00)");
         users.put(nurse1.getUserId(), nurse1);
 
         // 4. Pharmacist (Malaysian)
         Pharmacist pharm1 = new Pharmacist("USR-006", "pharm_wong", "pharm123", "Wong Wei Jun (Pharmacist)", 
-                                           "weijun@pantai.com.my", "+60 14-667 8901", "MPS-994821", "Farmasi Utama");
+                                           "weijun@pantai.com.my", "+60 14-667 8901", "MPS-994821", "Main Pharmacy Store");
         users.put(pharm1.getUserId(), pharm1);
 
         // 5. Patients (Malaysian)
         Patient pat1 = new Patient("USR-007", "tan_ah_hock", "pass123", "Tan Ah Hock", 
                                    "tahock@gmail.com", "+60 12-778 9012", "1988-05-14", "O+", 
-                                   "Darah Tinggi, Alahan Penicillin", "+60 12-999 8877");
+                                   "High Blood Pressure, Penicillin Allergy", "+60 12-999 8877");
         Patient pat2 = new Patient("USR-008", "nur_aisyah", "pass123", "Nur Aisyah binti Ismail", 
                                    "aisyah@yahoo.com.my", "+60 18-889 0123", "1995-11-20", "A-", 
-                                   "Tiada rekod penyakit kronik", "+60 11-2233 4455");
+                                   "No chronic medical history", "+60 11-2233 4455");
         users.put(pat1.getUserId(), pat1);
         users.put(pat2.getUserId(), pat2);
 
-        // Sample Appointments (Malaysian)
+        // Sample Appointments (English medical terms)
         LocalDate today = LocalDate.now();
         Appointment app1 = new Appointment("APT-1001", pat1.getUserId(), pat1.getFullName(), 
                                             doc1.getUserId(), doc1.getFullName(), today, 
-                                            LocalTime.of(9, 30), "Pemeriksaan Kardiologi Tahunan", doc1.getConsultationFee());
+                                            LocalTime.of(9, 30), "Annual Cardiology Checkup", doc1.getConsultationFee());
         app1.setStatus(AppointmentStatus.SCHEDULED);
 
         Appointment app2 = new Appointment("APT-1002", pat2.getUserId(), pat2.getFullName(), 
                                             doc2.getUserId(), doc2.getFullName(), today, 
-                                            LocalTime.of(10, 30), "Rawatan Masalah Kulit", doc2.getConsultationFee());
+                                            LocalTime.of(10, 30), "Skin Consultation & Rash Check", doc2.getConsultationFee());
         app2.setStatus(AppointmentStatus.WAITING);
 
         Appointment app3 = new Appointment("APT-1003", pat1.getUserId(), pat1.getFullName(), 
                                             doc3.getUserId(), doc3.getFullName(), today.minusDays(1), 
-                                            LocalTime.of(14, 0), "Pemeriksaan Kesihatan Rutin", doc3.getConsultationFee());
+                                            LocalTime.of(14, 0), "Routine Health Checkup", doc3.getConsultationFee());
         app3.setStatus(AppointmentStatus.COMPLETED);
-        app3.setConsultationNotes("Pesakit dalam keadaan sihat. Dipreskripsi Ubat Vitamin D3.");
+        app3.setConsultationNotes("Patient is in healthy condition. Prescribed Vitamin D3 supplement.");
 
         appointments.put(app1.getAppointmentId(), app1);
         appointments.put(app2.getAppointmentId(), app2);
         appointments.put(app3.getAppointmentId(), app3);
 
-        // Sample Prescription
+        // Sample Prescription (English dosage & instructions)
         Prescription rx1 = new Prescription("RX-5001", app3.getAppointmentId(), pat1.getUserId(), 
                                             pat1.getFullName(), doc3.getUserId(), doc3.getFullName(), 
-                                            "Vitamin D3 1000 IU", "1 biji sehari", "Makan selepas sarapan pagi");
+                                            "Vitamin D3 1000 IU", "1 tablet daily", "Take 1 tablet daily after breakfast with water.");
         prescriptions.put(rx1.getPrescriptionId(), rx1);
 
-        // Sample Notifications
-        notifications.add(new Notification("NOTIF-101", pat1.getUserId(), "Temujanji Disahkan", 
-                                          "Temujanji anda dengan Dr. Ahmad Razali telah disahkan untuk hari ini pukul 09:30 AM.", "APPOINTMENT"));
-        notifications.add(new Notification("NOTIF-102", pat2.getUserId(), "Kemaskini Giliran", 
-                                          "Jururawat Siti Nurhaliza telah mendaftar masuk anda. Sila tunggu di Bilik Menunggu B.", "STATUS_CHANGE"));
+        // Sample Notifications (English)
+        notifications.add(new Notification("NOTIF-101", pat1.getUserId(), "Appointment Confirmed", 
+                                          "Your appointment with Dr. Ahmad Razali has been confirmed for today at 09:30 AM.", "APPOINTMENT"));
+        notifications.add(new Notification("NOTIF-102", pat2.getUserId(), "Queue Status Update", 
+                                          "Nurse Siti Nurhaliza has checked you in. Please proceed to Waiting Room B.", "STATUS_CHANGE"));
     }
 
     // Accessors

@@ -3,14 +3,15 @@ package com.healthcare.gui;
 import com.healthcare.gui.panels.*;
 import com.healthcare.model.*;
 import com.healthcare.service.*;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
 
 /**
- * Modern Multi-Role Main Dashboard Frame.
- * Adjusts accessible panels and permissions based on logged-in User Role.
+ * Main Application Dashboard Frame adapting navigation tabs and views based on logged-in user role.
  */
 public class MainDashboardFrame extends JFrame {
     private final AuthService authService;
@@ -18,11 +19,9 @@ public class MainDashboardFrame extends JFrame {
     private final PrescriptionService prescriptionService;
     private final NotificationService notificationService;
     private final ReportService reportService;
+    private final User currentUser;
+    private final Runnable onLogout;
 
-    private User currentUser;
-    private Runnable onLogout;
-
-    private JLabel notificationBadge;
     private JTabbedPane mainTabbedPane;
 
     public MainDashboardFrame(AuthService authService, AppointmentService appointmentService, 
@@ -36,10 +35,10 @@ public class MainDashboardFrame extends JFrame {
         this.currentUser = authService.getCurrentUser();
         this.onLogout = onLogout;
 
-        setTitle("Smart Healthcare System - Logged in as " + currentUser.getFullName());
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setTitle("Smart Healthcare Management System - " + currentUser.getFullName() + " (" + currentUser.getRole().getDisplayName() + ")");
         setSize(1100, 720);
         setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         initUI();
     }
@@ -48,30 +47,26 @@ public class MainDashboardFrame extends JFrame {
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(ModernTheme.BACKGROUND);
 
-        // Header Panel
+        // Header Navigation Bar
         JPanel header = new JPanel(new BorderLayout());
-        header.setBackground(ModernTheme.PRIMARY); // Sky Blue Header Bar
-        header.setBorder(new EmptyBorder(16, 24, 16, 24));
+        header.setBackground(ModernTheme.PRIMARY);
+        header.setBorder(new EmptyBorder(12, 20, 12, 20));
 
-        JPanel userBox = new JPanel();
-        userBox.setLayout(new BoxLayout(userBox, BoxLayout.Y_AXIS));
-        userBox.setOpaque(false);
+        JLabel titleLbl = new JLabel("Smart Healthcare Management System");
+        titleLbl.setFont(ModernTheme.FONT_TITLE);
+        titleLbl.setForeground(Color.WHITE);
 
-        JLabel nameLbl = new JLabel("Welcome, " + currentUser.getFullName());
-        nameLbl.setFont(ModernTheme.FONT_HEADER);
-        nameLbl.setForeground(Color.WHITE);
+        JLabel userLbl = new JLabel("Logged in as: " + currentUser.getFullName() + " | Role: " + currentUser.getRole().getDisplayName());
+        userLbl.setFont(ModernTheme.FONT_SMALL);
+        userLbl.setForeground(new Color(224, 242, 254));
 
-        JLabel roleDescLbl = new JLabel(currentUser.getRoleDescription());
-        roleDescLbl.setFont(ModernTheme.FONT_REGULAR);
-        roleDescLbl.setForeground(ModernTheme.PRIMARY_LIGHT);
+        JPanel titleBox = new JPanel(new GridLayout(2, 1));
+        titleBox.setOpaque(false);
+        titleBox.add(titleLbl);
+        titleBox.add(userLbl);
 
-        userBox.add(nameLbl);
-        userBox.add(Box.createRigidArea(new Dimension(0, 4)));
-        userBox.add(roleDescLbl);
+        header.add(titleBox, BorderLayout.WEST);
 
-        header.add(userBox, BorderLayout.WEST);
-
-        // Right Action Toolbar (Notifications, Profile, Logout)
         JPanel actionBox = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 0));
         actionBox.setOpaque(false);
 
@@ -110,9 +105,9 @@ public class MainDashboardFrame extends JFrame {
         Role role = currentUser.getRole();
 
         if (role == Role.PATIENT) {
-            mainTabbedPane.addTab("Patient Dashboard", new PatientPanel(authService, appointmentService, prescriptionService, (Patient) currentUser));
+            mainTabbedPane.addTab("My Appointments & Bookings", new PatientPanel(authService, appointmentService, prescriptionService, (Patient) currentUser));
         } else if (role == Role.DOCTOR) {
-            mainTabbedPane.addTab("Consultation Queue & Patients", new DoctorPanel(appointmentService, prescriptionService, (Doctor) currentUser));
+            mainTabbedPane.addTab("Consultation Queue & Patients", new DoctorPanel((Doctor) currentUser, appointmentService, prescriptionService));
             mainTabbedPane.addTab("Executive Reports", new ReportPanel(reportService));
         } else if (role == Role.NURSE) {
             mainTabbedPane.addTab("Nurse Patient Check-In Queue", new NursePanel(appointmentService, (Nurse) currentUser));
@@ -120,8 +115,8 @@ public class MainDashboardFrame extends JFrame {
             mainTabbedPane.addTab("Pharmacy Medication Dispensing", new PharmacistPanel(prescriptionService, (Pharmacist) currentUser));
         } else if (role == Role.ADMIN) {
             mainTabbedPane.addTab("User & Account Management", new AdminUserManagementPanel(authService));
-            mainTabbedPane.addTab("System Appointments Master View", new PatientPanel(authService, appointmentService, prescriptionService, new Patient("ADM-PAT", "admin_pat", "pass", "System Overview Patient", "a@a.com", "123", "2000-01-01", "O+", "None", "123")));
-            mainTabbedPane.addTab("Pharmacy Dispensing Master View", new PharmacistPanel(prescriptionService, new Pharmacist("ADM-PH", "admin_ph", "pass", "System Pharmacist", "a@a.com", "123", "LIC-999", "Main")));
+            mainTabbedPane.addTab("Master Appointments View (Read-Only)", createAdminAppointmentsMasterView());
+            mainTabbedPane.addTab("Master Prescriptions View (Read-Only)", createAdminPrescriptionsMasterView());
             mainTabbedPane.addTab("System Analytics & Reports", new ReportPanel(reportService));
         }
 
@@ -129,34 +124,119 @@ public class MainDashboardFrame extends JFrame {
         add(mainPanel);
     }
 
+    private JPanel createAdminAppointmentsMasterView() {
+        JPanel panel = new JPanel(new BorderLayout(0, 12));
+        panel.setBackground(ModernTheme.BACKGROUND);
+        panel.setBorder(new EmptyBorder(16, 16, 16, 16));
+
+        JPanel headerCard = ModernTheme.createCardPanel();
+        headerCard.setLayout(new BorderLayout());
+        JLabel lbl = new JLabel("System Master Appointments Registry (Read-Only Overview)");
+        lbl.setFont(ModernTheme.FONT_TITLE);
+        JButton refreshBtn = ModernTheme.createPrimaryButton("Refresh Overview");
+        headerCard.add(lbl, BorderLayout.WEST);
+        headerCard.add(refreshBtn, BorderLayout.EAST);
+        panel.add(headerCard, BorderLayout.NORTH);
+
+        String[] cols = {"Appt ID", "Patient Name", "Doctor Name", "Date", "Time", "Reason for Visit", "Fee (RM)", "Status", "Notes"};
+        DefaultTableModel model = new DefaultTableModel(cols, 0) {
+            @Override
+            public boolean isCellEditable(int r, int c) { return false; }
+        };
+        JTable table = new JTable(model);
+        ModernTheme.styleTable(table);
+
+        Runnable loadData = () -> {
+            model.setRowCount(0);
+            for (Appointment a : appointmentService.getAllAppointments()) {
+                model.addRow(new Object[]{
+                    a.getAppointmentId(), a.getPatientName(), a.getDoctorName(),
+                    a.getAppointmentDate().toString(), a.getAppointmentTime().toString(),
+                    a.getReason(), String.format("RM %.2f", a.getFee()),
+                    a.getStatus().getLabel(), a.getConsultationNotes() != null ? a.getConsultationNotes() : "-"
+                });
+            }
+        };
+
+        refreshBtn.addActionListener(e -> loadData.run());
+        loadData.run();
+
+        panel.add(new JScrollPane(table), BorderLayout.CENTER);
+        return panel;
+    }
+
+    private JPanel createAdminPrescriptionsMasterView() {
+        JPanel panel = new JPanel(new BorderLayout(0, 12));
+        panel.setBackground(ModernTheme.BACKGROUND);
+        panel.setBorder(new EmptyBorder(16, 16, 16, 16));
+
+        JPanel headerCard = ModernTheme.createCardPanel();
+        headerCard.setLayout(new BorderLayout());
+        JLabel lbl = new JLabel("System Master Pharmacy Prescriptions Registry (Read-Only Overview)");
+        lbl.setFont(ModernTheme.FONT_TITLE);
+        JButton refreshBtn = ModernTheme.createPrimaryButton("Refresh Prescriptions");
+        headerCard.add(lbl, BorderLayout.WEST);
+        headerCard.add(refreshBtn, BorderLayout.EAST);
+        panel.add(headerCard, BorderLayout.NORTH);
+
+        String[] cols = {"Prescription ID", "Appt ID", "Patient Name", "Doctor Name", "Medication Name", "Dosage", "Instructions", "Status"};
+        DefaultTableModel model = new DefaultTableModel(cols, 0) {
+            @Override
+            public boolean isCellEditable(int r, int c) { return false; }
+        };
+        JTable table = new JTable(model);
+        ModernTheme.styleTable(table);
+
+        Runnable loadData = () -> {
+            model.setRowCount(0);
+            for (Prescription rx : prescriptionService.getAllPrescriptions()) {
+                model.addRow(new Object[]{
+                    rx.getPrescriptionId(), rx.getAppointmentId(), rx.getPatientName(),
+                    rx.getDoctorName(), rx.getMedicationName(), rx.getDosage(),
+                    rx.getInstructions(), rx.getStatus().getLabel()
+                });
+            }
+        };
+
+        refreshBtn.addActionListener(e -> loadData.run());
+        loadData.run();
+
+        panel.add(new JScrollPane(table), BorderLayout.CENTER);
+        return panel;
+    }
+
     private void showNotificationsDialog(JButton notifBtn) {
         List<Notification> notifs = notificationService.getNotificationsForUser(currentUser.getUserId());
         notificationService.markAllAsRead(currentUser.getUserId());
         notifBtn.setText("Notifications (0)");
 
-        JDialog dialog = new JDialog(this, "Notifications & System Alerts", true);
-        dialog.setSize(480, 400);
+        JDialog dialog = new JDialog(this, "System Notifications & Alerts", true);
+        dialog.setSize(520, 380);
         dialog.setLocationRelativeTo(this);
 
         JPanel panel = new JPanel(new BorderLayout(0, 12));
         panel.setBorder(new EmptyBorder(16, 16, 16, 16));
 
-        JLabel titleLbl = new JLabel("System Alerts & Reminder Notifications");
-        titleLbl.setFont(ModernTheme.FONT_TITLE);
-        panel.add(titleLbl, BorderLayout.NORTH);
+        JLabel title = new JLabel("Your Recent Notifications (" + notifs.size() + ")");
+        title.setFont(ModernTheme.FONT_TITLE);
+        panel.add(title, BorderLayout.NORTH);
 
         DefaultListModel<String> listModel = new DefaultListModel<>();
         if (notifs.isEmpty()) {
             listModel.addElement("No notifications found.");
         } else {
             for (Notification n : notifs) {
-                listModel.addElement("<html><b>[" + n.getFormattedTimestamp() + "] " + n.getTitle() + "</b><br>" + n.getMessage() + "<br></html>");
+                listModel.addElement("[" + n.getFormattedTimestamp() + "] [" + n.getType() + "] " + n.getTitle() + ": " + n.getMessage());
             }
         }
 
         JList<String> list = new JList<>(listModel);
         list.setFont(ModernTheme.FONT_REGULAR);
         panel.add(new JScrollPane(list), BorderLayout.CENTER);
+
+        JButton closeBtn = ModernTheme.createPrimaryButton("Close");
+        closeBtn.addActionListener(e -> dialog.dispose());
+        panel.add(closeBtn, BorderLayout.SOUTH);
 
         dialog.add(panel);
         dialog.setVisible(true);
@@ -191,10 +271,6 @@ public class MainDashboardFrame extends JFrame {
         JButton saveBtn = ModernTheme.createPrimaryButton("Save Profile Changes");
         saveBtn.addActionListener(e -> {
             try {
-                String oldEmail = currentUser.getEmail();
-                String oldPhone = currentUser.getPhone();
-                String oldPass = currentUser.getPassword();
-
                 currentUser.setEmail(emailField.getText().trim());
                 currentUser.setPhone(phoneField.getText().trim());
 
@@ -219,13 +295,12 @@ public class MainDashboardFrame extends JFrame {
     }
 
     private void addFormRow(JPanel panel, GridBagConstraints gbc, String labelText, Component comp, int row) {
-        gbc.gridwidth = 1;
-        gbc.gridx = 0; gbc.gridy = row;
+        gbc.gridx = 0; gbc.gridy = row; gbc.gridwidth = 1; gbc.weightx = 0.3;
         JLabel lbl = new JLabel(labelText);
         lbl.setFont(ModernTheme.FONT_BOLD);
         panel.add(lbl, gbc);
 
-        gbc.gridx = 1; gbc.gridy = row;
+        gbc.gridx = 1; gbc.gridy = row; gbc.gridwidth = 1; gbc.weightx = 0.7;
         panel.add(comp, gbc);
     }
 }

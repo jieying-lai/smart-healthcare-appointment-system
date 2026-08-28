@@ -87,6 +87,10 @@ public class Appointment implements Serializable {
         return reasonForVisit;
     }
 
+    public String getReason() {
+        return reasonForVisit;
+    }
+
     public void setReasonForVisit(String reasonForVisit) {
         this.reasonForVisit = reasonForVisit;
     }

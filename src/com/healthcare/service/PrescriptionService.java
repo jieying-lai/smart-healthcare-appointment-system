@@ -8,7 +8,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * Service managing medication prescription workflow from issue to dispensing.
+ * Service managing medication prescription workflow from issue to dispensing with strict status validation.
  */
 public class PrescriptionService {
     private final DataStorageService dataStorage;
@@ -28,7 +28,7 @@ public class PrescriptionService {
 
         String rxId = "RX-" + (5000 + dataStorage.getPrescriptions().size() + 1);
         Prescription rx = new Prescription(rxId, appointmentId, patientId, patientName, doctorId, 
-                                          doctorName, medicationName, dosage, instructions);
+                                          doctorName, medicationName.trim(), dosage.trim(), instructions.trim());
 
         dataStorage.getPrescriptions().put(rxId, rx);
         dataStorage.saveData();
@@ -43,6 +43,21 @@ public class PrescriptionService {
         Prescription rx = dataStorage.getPrescriptions().get(rxId);
         if (rx == null) {
             throw new InvalidRecordException("Prescription record not found.");
+        }
+
+        if (status == PrescriptionStatus.PREPARING) {
+            if (rx.getStatus() == PrescriptionStatus.DISPENSED) {
+                throw new InvalidRecordException("Cannot set status to Preparing: Prescription has already been dispensed.");
+            }
+            if (rx.getStatus() == PrescriptionStatus.PREPARING) {
+                throw new InvalidRecordException("Prescription is already in Preparing status.");
+            }
+        }
+
+        if (status == PrescriptionStatus.DISPENSED) {
+            if (rx.getStatus() == PrescriptionStatus.DISPENSED) {
+                throw new InvalidRecordException("Prescription has already been dispensed.");
+            }
         }
 
         rx.setStatus(status);

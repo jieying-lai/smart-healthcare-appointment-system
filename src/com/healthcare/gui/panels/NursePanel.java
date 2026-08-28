@@ -69,10 +69,10 @@ public class NursePanel extends JPanel {
                 a.getAppointmentId(),
                 a.getPatientName(),
                 a.getDoctorName(),
-                a.getFormattedDate(),
-                a.getFormattedTime(),
-                a.getStatus(),
-                a.getReasonForVisit()
+                a.getAppointmentDate().toString(),
+                a.getAppointmentTime().toString(),
+                a.getStatus().getLabel(),
+                a.getReason()
             });
         }
     }

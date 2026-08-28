@@ -116,7 +116,7 @@ public class LoginFrame extends JFrame {
         accountsList.setLayout(new BoxLayout(accountsList, BoxLayout.Y_AXIS));
         accountsList.setOpaque(false);
 
-        addQuickLoginButton(accountsList, "Tan Jin Heng (Admin Alex)", "admin", "admin123", Role.ADMIN);
+        addQuickLoginButton(accountsList, "Lai Jie Ying (Admin)", "admin", "admin123", Role.ADMIN);
         addQuickLoginButton(accountsList, "Dr. Ahmad Razali (Doctor)", "dr_razali", "doc123", Role.DOCTOR);
         addQuickLoginButton(accountsList, "Nurse Siti Nurhaliza (Nurse)", "nurse_siti", "nurse123", Role.NURSE);
         addQuickLoginButton(accountsList, "Wong Wei Jun (Pharmacist)", "pharm_wong", "pharm123", Role.PHARMACIST);
