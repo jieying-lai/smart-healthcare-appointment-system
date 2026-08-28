@@ -363,7 +363,7 @@ public class DataStorageService {
         users.put(pat9.getUserId(), pat9);
         users.put(pat10.getUserId(), pat10);
 
-        // Sample Appointments (15 realistic records across all 10 patients and 5 doctors)
+        // Sample Appointments (12 realistic records across all 10 patients and 5 doctors)
         LocalDate today = LocalDate.now();
         Appointment app1 = new Appointment("APT-1001", pat1.getUserId(), pat1.getFullName(), 
                                             doc1.getUserId(), doc1.getFullName(), today, 

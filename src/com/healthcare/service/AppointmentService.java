@@ -1,14 +1,17 @@
 package com.healthcare.service;
 
-import com.healthcare.exception.*;
+import com.healthcare.exception.InvalidRecordException;
+import com.healthcare.exception.SlotConflictException;
 import com.healthcare.model.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Service managing appointment transactions, queue status transitions, and slot conflict validations.
+ * Service managing appointment scheduling, nurse check-ins, doctor consultations, 
+ * and slot collision prevention across all patients and doctors.
  */
 public class AppointmentService {
     private final DataStorageService dataStorage;
@@ -19,45 +22,45 @@ public class AppointmentService {
         this.notificationService = notificationService;
     }
 
-    public Appointment bookAppointment(String patientId, String doctorId, LocalDate date, 
-                                        LocalTime time, String reason) throws SlotConflictException, InvalidRecordException {
+    public Appointment bookAppointment(String patientId, String doctorId, LocalDate date, LocalTime time, String reason) 
+            throws SlotConflictException, InvalidRecordException {
+        if (reason == null || reason.trim().isEmpty()) {
+            throw new InvalidRecordException("Reason for visit cannot be empty.");
+        }
         if (date.isBefore(LocalDate.now())) {
-            throw new InvalidRecordException("Cannot book appointment on a past date.");
+            throw new InvalidRecordException("Appointment date cannot be in the past.");
         }
 
-        User patient = dataStorage.getUsers().get(patientId);
-        User doctor = dataStorage.getUsers().get(doctorId);
+        User patUser = dataStorage.getUsers().get(patientId);
+        User docUser = dataStorage.getUsers().get(doctorId);
 
-        if (!(patient instanceof Patient)) {
-            throw new InvalidRecordException("Invalid patient record ID.");
+        if (patUser == null || !(patUser instanceof Patient)) {
+            throw new InvalidRecordException("Patient not found.");
         }
-        if (!(doctor instanceof Doctor)) {
-            throw new InvalidRecordException("Invalid doctor record ID.");
+        if (docUser == null || !(docUser instanceof Doctor)) {
+            throw new InvalidRecordException("Doctor not found.");
         }
 
-        Doctor doc = (Doctor) doctor;
+        Doctor doctor = (Doctor) docUser;
+        Patient patient = (Patient) patUser;
 
-        // Check Doctor slot conflict
+        // Check Slot Collisions
         checkDoctorSlotConflict(doctorId, date, time, null);
-
-        // Check Patient slot conflict (Patient cannot book 2 appointments at the same date & time with any doctor)
         checkPatientSlotConflict(patientId, date, time, null);
 
         String apptId = "APT-" + (1000 + dataStorage.getAppointments().size() + 1);
-        Appointment appointment = new Appointment(apptId, patient.getUserId(), patient.getFullName(), 
-                                                   doc.getUserId(), doc.getFullName(), date, time, 
-                                                   reason, doc.getConsultationFee());
+        Appointment appt = new Appointment(apptId, patientId, patient.getFullName(), doctorId, 
+                                          doctor.getFullName(), date, time, reason.trim(), doctor.getConsultationFee());
 
-        dataStorage.getAppointments().put(apptId, appointment);
+        dataStorage.getAppointments().put(apptId, appt);
         dataStorage.saveData();
 
-        // Send notifications
         notificationService.createNotification(patientId, "Appointment Booked", 
-            "Appointment " + apptId + " booked with " + doc.getFullName() + " for " + date + " at " + time + ".", "APPOINTMENT");
-        notificationService.createNotification(doctorId, "New Booking", 
-            "New appointment " + apptId + " scheduled with " + patient.getFullName() + " for " + date + " at " + time + ".", "APPOINTMENT");
+            "Your appointment with Dr. " + doctor.getFullName() + " is confirmed for " + date + " at " + time + ".", "APPOINTMENT");
+        notificationService.createNotification(doctorId, "New Appointment Scheduled", 
+            "Patient " + patient.getFullName() + " booked an appointment for " + date + " at " + time + ".", "APPOINTMENT");
 
-        return appointment;
+        return appt;
     }
 
     public void rescheduleAppointment(String appointmentId, LocalDate newDate, LocalTime newTime) 
@@ -166,12 +169,9 @@ public class AppointmentService {
             if (appt.getDoctorId().equals(doctorId) && 
                 appt.getAppointmentDate().equals(date) && 
                 appt.getAppointmentTime().equals(time) && 
+                (currentApptId == null || !appt.getAppointmentId().equals(currentApptId)) &&
                 appt.getStatus() != AppointmentStatus.CANCELLED) {
-                
-                if (currentApptId == null || !appt.getAppointmentId().equals(currentApptId)) {
-                    throw new SlotConflictException("Doctor already has an appointment booked on " + 
-                                                      date + " at " + time + ". Please select another time slot.");
-                }
+                throw new SlotConflictException("Doctor already has an active appointment scheduled at " + date + " " + time + ".");
             }
         }
     }
@@ -182,12 +182,9 @@ public class AppointmentService {
             if (appt.getPatientId().equals(patientId) && 
                 appt.getAppointmentDate().equals(date) && 
                 appt.getAppointmentTime().equals(time) && 
+                (currentApptId == null || !appt.getAppointmentId().equals(currentApptId)) &&
                 appt.getStatus() != AppointmentStatus.CANCELLED) {
-                
-                if (currentApptId == null || !appt.getAppointmentId().equals(currentApptId)) {
-                    throw new SlotConflictException("You already have an appointment booked on " + 
-                                                      date + " at " + time + ". Patients cannot book multiple appointments at the exact same time slot.");
-                }
+                throw new SlotConflictException("Patient already has another appointment scheduled at " + date + " " + time + ".");
             }
         }
     }
@@ -196,21 +193,16 @@ public class AppointmentService {
         if (user.getRole() == Role.PATIENT) {
             return dataStorage.getAppointments().values().stream()
                 .filter(a -> a.getPatientId().equals(user.getUserId()))
-                .sorted(Comparator.comparing(Appointment::getAppointmentDate).thenComparing(Appointment::getAppointmentTime))
                 .collect(Collectors.toList());
         } else if (user.getRole() == Role.DOCTOR) {
             return dataStorage.getAppointments().values().stream()
                 .filter(a -> a.getDoctorId().equals(user.getUserId()))
-                .sorted(Comparator.comparing(Appointment::getAppointmentDate).thenComparing(Appointment::getAppointmentTime))
                 .collect(Collectors.toList());
-        } else {
-            return getAllAppointments();
         }
+        return getAllAppointments();
     }
 
     public List<Appointment> getAllAppointments() {
-        return dataStorage.getAppointments().values().stream()
-            .sorted(Comparator.comparing(Appointment::getAppointmentDate).thenComparing(Appointment::getAppointmentTime))
-            .collect(Collectors.toList());
+        return new ArrayList<>(dataStorage.getAppointments().values());
     }
 }
