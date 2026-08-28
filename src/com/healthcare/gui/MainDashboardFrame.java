@@ -190,17 +190,25 @@ public class MainDashboardFrame extends JFrame {
 
         JButton saveBtn = ModernTheme.createPrimaryButton("Save Profile Changes");
         saveBtn.addActionListener(e -> {
-            currentUser.setEmail(emailField.getText().trim());
-            currentUser.setPhone(phoneField.getText().trim());
+            try {
+                String oldEmail = currentUser.getEmail();
+                String oldPhone = currentUser.getPhone();
+                String oldPass = currentUser.getPassword();
 
-            String pass = new String(newPassField.getPassword());
-            if (!pass.trim().isEmpty()) {
-                currentUser.setPassword(pass.trim());
+                currentUser.setEmail(emailField.getText().trim());
+                currentUser.setPhone(phoneField.getText().trim());
+
+                String pass = new String(newPassField.getPassword());
+                if (!pass.trim().isEmpty()) {
+                    currentUser.setPassword(pass.trim());
+                }
+
+                authService.updateUserProfile(currentUser);
+                JOptionPane.showMessageDialog(dialog, "Profile updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                dialog.dispose();
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(dialog, ex.getMessage(), "Validation Error", JOptionPane.ERROR_MESSAGE);
             }
-
-            authService.updateUserProfile(currentUser);
-            JOptionPane.showMessageDialog(dialog, "Profile updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-            dialog.dispose();
         });
 
         gbc.gridx = 0; gbc.gridy = y; gbc.gridwidth = 2;
