@@ -244,4 +244,27 @@ public class ModernTheme {
             }
         });
     }
+
+    public static JTextField createSearchFilterField(JTable table, javax.swing.table.DefaultTableModel model) {
+        javax.swing.table.TableRowSorter<javax.swing.table.DefaultTableModel> sorter = new javax.swing.table.TableRowSorter<>(model);
+        table.setRowSorter(sorter);
+
+        JTextField searchField = createTextField();
+        searchField.setPreferredSize(new Dimension(240, 32));
+
+        searchField.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            private void filter() {
+                String text = searchField.getText().trim();
+                if (text.isEmpty()) {
+                    sorter.setRowFilter(null);
+                } else {
+                    sorter.setRowFilter(RowFilter.regexFilter("(?i)" + java.util.regex.Pattern.quote(text)));
+                }
+            }
+            @Override public void insertUpdate(javax.swing.event.DocumentEvent e) { filter(); }
+            @Override public void removeUpdate(javax.swing.event.DocumentEvent e) { filter(); }
+            @Override public void changedUpdate(javax.swing.event.DocumentEvent e) { filter(); }
+        });
+        return searchField;
+    }
 }

@@ -54,13 +54,6 @@ public class PharmacistPanel extends JPanel {
         JButton refreshBtn = ModernTheme.createSecondaryButton("Refresh Prescriptions");
         refreshBtn.addActionListener(e -> refreshTable());
 
-        toolbar.add(viewDetailsBtn);
-        toolbar.add(startPrepBtn);
-        toolbar.add(dispenseBtn);
-        toolbar.add(refreshBtn);
-
-        add(toolbar, BorderLayout.NORTH);
-
         String[] cols = {"Prescription ID", "Patient Name", "Doctor Name", "Medication Name", "Dosage", "Instructions", "Status", "Issued Date"};
         rxTableModel = new DefaultTableModel(cols, 0) {
             @Override
@@ -68,6 +61,18 @@ public class PharmacistPanel extends JPanel {
         };
         rxTable = new JTable(rxTableModel);
         ModernTheme.styleTable(rxTable);
+
+        JTextField searchField = ModernTheme.createSearchFilterField(rxTable, rxTableModel);
+        searchField.setToolTipText("Search medication, patient, or doctor...");
+
+        toolbar.add(viewDetailsBtn);
+        toolbar.add(startPrepBtn);
+        toolbar.add(dispenseBtn);
+        toolbar.add(refreshBtn);
+        toolbar.add(new JLabel("🔍 Filter:"));
+        toolbar.add(searchField);
+
+        add(toolbar, BorderLayout.NORTH);
 
         rxTable.addMouseListener(new MouseAdapter() {
             @Override

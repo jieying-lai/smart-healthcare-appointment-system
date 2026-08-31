@@ -50,12 +50,6 @@ public class NursePanel extends JPanel {
         JButton refreshBtn = ModernTheme.createSecondaryButton("Refresh Queue");
         refreshBtn.addActionListener(e -> refreshTable());
 
-        toolbar.add(viewDetailsBtn);
-        toolbar.add(checkInBtn);
-        toolbar.add(refreshBtn);
-
-        add(toolbar, BorderLayout.NORTH);
-
         String[] cols = {"Appt ID", "Patient Name", "Doctor Name", "Date", "Time", "Status", "Reason for Visit"};
         queueTableModel = new DefaultTableModel(cols, 0) {
             @Override
@@ -63,6 +57,17 @@ public class NursePanel extends JPanel {
         };
         queueTable = new JTable(queueTableModel);
         ModernTheme.styleTable(queueTable);
+
+        JTextField searchField = ModernTheme.createSearchFilterField(queueTable, queueTableModel);
+        searchField.setToolTipText("Search patient, doctor, or ID...");
+
+        toolbar.add(viewDetailsBtn);
+        toolbar.add(checkInBtn);
+        toolbar.add(refreshBtn);
+        toolbar.add(new JLabel("🔍 Filter:"));
+        toolbar.add(searchField);
+
+        add(toolbar, BorderLayout.NORTH);
 
         queueTable.getColumnModel().getColumn(0).setPreferredWidth(85);
         queueTable.getColumnModel().getColumn(1).setPreferredWidth(140);

@@ -51,14 +51,6 @@ public class AdminUserManagementPanel extends JPanel {
         JButton refreshBtn = ModernTheme.createSecondaryButton("Refresh");
         refreshBtn.addActionListener(e -> refreshTable());
 
-        toolbar.add(addDoctorBtn);
-        toolbar.add(addStaffBtn);
-        toolbar.add(toggleActiveBtn);
-        toolbar.add(resetPassBtn);
-        toolbar.add(refreshBtn);
-
-        add(toolbar, BorderLayout.NORTH);
-
         String[] cols = {"User ID", "Username", "Full Name", "Role", "Email", "Phone", "Status / Role Detail", "Active State"};
         userTableModel = new DefaultTableModel(cols, 0) {
             @Override
@@ -66,6 +58,19 @@ public class AdminUserManagementPanel extends JPanel {
         };
         userTable = new JTable(userTableModel);
         ModernTheme.styleTable(userTable);
+
+        JTextField searchField = ModernTheme.createSearchFilterField(userTable, userTableModel);
+        searchField.setToolTipText("Search user by name, role, email or ID...");
+
+        toolbar.add(addDoctorBtn);
+        toolbar.add(addStaffBtn);
+        toolbar.add(toggleActiveBtn);
+        toolbar.add(resetPassBtn);
+        toolbar.add(refreshBtn);
+        toolbar.add(new JLabel("🔍 Filter:"));
+        toolbar.add(searchField);
+
+        add(toolbar, BorderLayout.NORTH);
 
         add(new JScrollPane(userTable), BorderLayout.CENTER);
     }

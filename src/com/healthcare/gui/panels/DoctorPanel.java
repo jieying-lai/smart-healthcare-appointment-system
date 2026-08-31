@@ -56,15 +56,6 @@ public class DoctorPanel extends JPanel {
         JButton refreshBtn = ModernTheme.createPrimaryButton("Refresh Queue");
         refreshBtn.addActionListener(e -> refreshTable());
 
-        headerCard.add(textPanel, BorderLayout.WEST);
-        headerCard.add(refreshBtn, BorderLayout.EAST);
-
-        add(headerCard, BorderLayout.NORTH);
-
-        // Center Table Card
-        JPanel tableCard = ModernTheme.createCardPanel();
-        tableCard.setLayout(new BorderLayout(0, 12));
-
         String[] columns = {"Appt ID", "Patient Name", "Patient ID", "Date", "Time", "Reason for Visit", "Status", "Notes"};
         queueTableModel = new DefaultTableModel(columns, 0) {
             @Override
@@ -73,6 +64,25 @@ public class DoctorPanel extends JPanel {
 
         queueTable = new JTable(queueTableModel);
         ModernTheme.styleTable(queueTable);
+
+        JPanel rightBox = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        rightBox.setOpaque(false);
+
+        JTextField searchField = ModernTheme.createSearchFilterField(queueTable, queueTableModel);
+        searchField.setToolTipText("Filter queue by name, ID or status...");
+
+        rightBox.add(new JLabel("🔍 Filter Queue:"));
+        rightBox.add(searchField);
+        rightBox.add(refreshBtn);
+
+        headerCard.add(textPanel, BorderLayout.WEST);
+        headerCard.add(rightBox, BorderLayout.EAST);
+
+        add(headerCard, BorderLayout.NORTH);
+
+        // Center Table Card
+        JPanel tableCard = ModernTheme.createCardPanel();
+        tableCard.setLayout(new BorderLayout(0, 12));
 
         // Set column widths for clean alignment
         queueTable.getColumnModel().getColumn(0).setPreferredWidth(85);
@@ -254,9 +264,14 @@ public class DoctorPanel extends JPanel {
             }
             try {
                 appointmentService.recordConsultation(apptId, notesText);
-                JOptionPane.showMessageDialog(dialog, "Consultation record saved successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                int choice = JOptionPane.showConfirmDialog(dialog, 
+                    "Consultation record saved successfully!\nWould you like to issue a prescription for " + patName + " now?", 
+                    "Success & Issue Prescription", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                 dialog.dispose();
                 refreshTable();
+                if (choice == JOptionPane.YES_OPTION) {
+                    showPrescriptionDialog();
+                }
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(dialog, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
